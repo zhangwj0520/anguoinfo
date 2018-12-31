@@ -1,0 +1,18 @@
+.tableHead {
+    border: 1px solid #ccc;
+    background: #4394eb;
+    font-weight: normal !important;
+    color: #000;
+    th{
+        border: 1px solid #ccc;
+    }
+}
+.tableBody {
+    td{
+        border: 1px solid #ccc;
+        text-align: center;
+    }
+    tr:nth-child(even) {
+        background: #a1cdfc;
+    }
+}
