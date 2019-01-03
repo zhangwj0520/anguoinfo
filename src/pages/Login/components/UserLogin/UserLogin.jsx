@@ -1,7 +1,7 @@
 /* eslint react/no-string-refs:0 */
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Input, Button, Checkbox, Grid } from '@icedesign/base';
 import {
   FormBinderWrapper as IceFormBinderWrapper,
@@ -17,7 +17,6 @@ const { Row, Col } = Grid;
 const backgroundImage =
   require('./images/TB1zsNhXTtYBeNjy1XdXXXXyVXa-2252-1500.png');
 
-@withRouter
 @connect(({ login, loading }) => ({
     login,
     submitting: loading.effects['login/login'],
@@ -33,9 +32,8 @@ export default class UserLogin extends Component {
     super(props);
     this.state = {
       value: {
-        account: undefined,
-        password: undefined,
-        checkbox: false,
+        userName: undefined,
+        passWord: undefined,
       },
     };
   }
@@ -58,8 +56,6 @@ export default class UserLogin extends Component {
         type: 'login/login',
         payload: values,
       });
-    //   this.props.history.push('/');
-      // HashRouter.push('/');
     });
   };
 
@@ -91,12 +87,12 @@ export default class UserLogin extends Component {
                       size="small"
                       style={styles.inputIcon}
                     />
-                    <IceFormBinder name="account" required message="必填">
+                    <IceFormBinder name="userName" required message="必填">
                       <Input maxLength={20} placeholder="会员名/邮箱/手机号" />
                     </IceFormBinder>
                   </Col>
                   <Col>
-                    <IceFormError name="account" />
+                    <IceFormError name="userName" />
                   </Col>
                 </Row>
 
@@ -107,22 +103,22 @@ export default class UserLogin extends Component {
                       size="small"
                       style={styles.inputIcon}
                     />
-                    <IceFormBinder name="password" required message="必填">
-                      <Input htmlType="password" placeholder="密码" />
+                    <IceFormBinder name="passWord" required message="必填">
+                      <Input htmlType="passWord" placeholder="密码" />
                     </IceFormBinder>
                   </Col>
                   <Col>
-                    <IceFormError name="password" />
+                    <IceFormError name="passWord" />
                   </Col>
                 </Row>
 
-                <Row style={styles.formItem}>
+                {/* <Row style={styles.formItem}>
                   <Col>
                     <IceFormBinder name="checkbox">
                       <Checkbox style={styles.checkbox}>记住账号</Checkbox>
                     </IceFormBinder>
                   </Col>
-                </Row>
+                </Row> */}
 
                 <Row style={styles.formItem}>
                   <Button
@@ -135,9 +131,9 @@ export default class UserLogin extends Component {
                 </Row>
 
                 <Row className="tips" style={styles.tips}>
-                  <a href="/" style={styles.link}>
+                  <Link to="/register" style={styles.link}>
                     立即注册
-                  </a>
+                  </Link>
                   <span style={styles.line}>|</span>
                   <a href="/" style={styles.link}>
                     忘记密码

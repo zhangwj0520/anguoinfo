@@ -11,8 +11,7 @@ const passport = require("passport");
 //@access public
 router.post("/register", (req, res) => {
   //查询数据库中是否有该用户
-  let { userName, passWord, currentAuthority, name, mobile } = req.body;
-  //currentAuthority = currentAuthority ? currentAuthority.concat(['user']) : ['user'];
+  let { userName, passWord } = req.body;
   MedUsers.findOne({
     userName: userName
   }).then(user => {
@@ -23,11 +22,7 @@ router.post("/register", (req, res) => {
       let newPass = md5.update(passWord).digest("hex");
       const newUser = new MedUsers({
         userName: userName,
-        passWord: newPass,
-        currentAuthority,
-        name,
-        mobile,
-        key: Math.floor(Math.random() * 10000)
+        passWord: newPass
       });
       newUser
         .save()
@@ -75,15 +70,21 @@ router.post("/delete", (req, res) => {
 //@access public
 router.post("/login", (req, res) => {
   const userName = req.body.userName;
+  const lastLoginTime = new Date();
   //查询数据库
-  MedUsers.findOne({
-    userName
-  }).then(user => {
+  MedUsers.findOneAndUpdate(
+    {
+      userName
+    },
+    {
+      $set: {
+        lastLoginTime
+      }
+    }
+  ).then(user => {
     if (!user) {
       return res.send({
-        status: "error",
-        type: req.body.type,
-        currentAuthority: "guest"
+        status: "no-user"
       });
     }
     //密码匹配
@@ -97,7 +98,6 @@ router.post("/login", (req, res) => {
           userName,
           message: "请申请权限",
           status: "noauth",
-          //type: req.body.type,
           currentAuthority
         });
       } else {
@@ -105,12 +105,11 @@ router.post("/login", (req, res) => {
           userName,
           message: "登录成功",
           status: "ok",
-          type: req.body.type,
           currentAuthority
         });
       }
     } else {
-      return res.json({ status: 0, message: "密码错误" });
+      return res.json({ status: "error" });
     }
   });
 });

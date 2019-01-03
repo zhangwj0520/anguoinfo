@@ -28,7 +28,7 @@ const ProfileSchema = new Schema({
     rquired: true
   },
   data: {
-    type: Array,
+    type: Object,
     rquired: true
   },
   key: {
@@ -72,6 +72,9 @@ const ProfileSchema = new Schema({
     type: Array
   },
   baojiao_index: {
+    type: String
+  },
+  fileName: {
     type: String
   }
 });

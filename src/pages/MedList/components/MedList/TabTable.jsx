@@ -1,14 +1,14 @@
 import React, { Component ,Fragment} from 'react';
 import IceContainer from '@icedesign/container';
-import { Tab,Button,Feedback,Badge } from '@icedesign/base';
-import axios from 'axios';
+import { Tab,Button,Feedback,Badge,DatePicker,Icon } from '@icedesign/base';
+import moment from 'moment';
 import CustomTable from './components/CustomTable';
 import { withRouter } from 'react-router-dom';
 import { btnAuthority } from '../../../../utils/authority';
 import {Divider} from 'antd'
 import { connect } from 'dva';
 import EditDialog from './components/EditDialog';
-import DeleteBalloon from './components/DeleteBalloon';
+import DeleteBalloon from '../../../../components/DeleteBalloon';
 
 const TabPane = Tab.TabPane;
 const { toast } = Feedback;
@@ -32,86 +32,93 @@ export default class TabTable extends Component {
     this.state = {
       dataSource: {},
       tabKey: 'all',
-      data:{}
+      data: [],
+      editable: true,
     };
     this.columns = [
         {
           title: '序号',
           key: 'key',
+          width:60,
           render: (value, index, record) => index+1,
         },
         {
           title: '订单编号',
           dataIndex: 'sn',
+          width:120,
           key: 'sn',
         },
         {
           title: '发货日期',
           dataIndex: 'fahuo_time',
-          editable: true,
-          sorter: (a, b) => a.fahuo_time - b.fahuo_time,
+          width:120,
           key: 'fahuo_time',
           render: (text, index,record) => {
             if (record.editable) {
               return (
                 <DatePicker
-                  //onOpenChange={status => this.onClear(status)}
-                  onChange={data => this.onSave(data, record)}
-                  // blur={this.onClear}
+                  onChange={data => this.onSave(data,index,record)}
+                  onOpenChange={(e)=>this.onClose(e,index,record)}
+                  defaultOpen={true}
+                  size={"small"}
+                  defaultValue={record.fahuo_time}
                   placeholder="发货日期"
                 />
               );
             }
-            return text ? (
-              <span style={{ textAlign: Center }} onClick={this.toggleEdit(record._id)}>
-                {moment(Number(text)).format('YYYY-MM-DD')}
+            return record.fahuo_time ? (
+              <span  onClick={()=>this.toggleEdit(record._id)}>
+                {moment(record.fahuo_time).format('YYYY-MM-DD')}
               </span>
             ) : (
-              <Button type="primary" onClick={this.toggleEdit(record._id)}>
-                发货日期
-              </Button>
+                 <DatePicker
+                  onChange={data => this.onSave(data, index,record)}
+                  placeholder="发货日期"
+                />
             );
-          },
+           },
         },
         {
           title: '订单厂家',
           dataIndex: 'vender',
+          width:100,
           key: 'vender',
         },
         {
           title: '总订单金额(元)',
           dataIndex: 'dingdan_totalPrice',
+          width:120,
           key: 'dingdan_totalPrice',
         },
         {
           title: '总中标金额(元)',
           dataIndex: 'zhongbiao_totalPrice',
+          width:120,
           key: 'zhongbiao_totalPrice',
         },
         {
           title: '总采购金额(元)',
           dataIndex: 'caigou_totalPrice',
           key: 'caigou_totalPrice',
+          width:120,
         },
         {
           title: '已结算金额(元)',
           dataIndex: 'jiesuan_price',
           key: 'jiesuan_price',
+          width:120,
         },
         {
           title: '运费(元)',
           dataIndex: 'spend',
           key: 'spend',
-          render:(text, index,record)=><Button type="secondary" onClick={() => this.spendList(record)}>{record.spend}</Button>
-        },
-        {
-          title: '类别',
-          dataIndex: 'venderType',
-          key: 'venderType',
+          width:100,
+          render:(text, index,record)=><a type="secondary" onClick={() => this.spendList(record)}>{record.spend}</a>
         },
         {
           title: '结算状态',
           dataIndex: 'status',
+          width:100,
           filters: [
             {
               text: status[0],
@@ -126,8 +133,8 @@ export default class TabTable extends Component {
               value: 2,
             },
           ],
-          render(val) {
-            return <Badge status={statusMap[val]} text={status[val]} />;
+          render(text, index,record) {
+            return <Badge status={statusMap[record.status]} text={status[record.status]} />;
           },
         },
     
@@ -135,23 +142,15 @@ export default class TabTable extends Component {
           title: '操作',
           width: 130,
           render: (text, index,record) => {
-            //if(btnAuthority('delete')){
-            if(1){
               return (
                 <Fragment>
-                  <Button type="primary" shape="warning" onClick={() => this.deleteLite(record._id)}>删除</Button>
-                  <Button type="primary" onClick={() => this.detailList(record)}>品种详细</Button>
+                     <a onClick={() => this.detailList(record)}>订单详情</a>
+                    <span style={{marginLeft:"4px",marginRight:'4px'}}>|</span>
+                    <DeleteBalloon
+                        handleRemove={() => this.deleteLite(record._id)}
+                    />
                 </Fragment>
-              )
-            }else{
-              return  (
-                <Fragment>
-                  <a onClick={() => this.detailList(record)}>品种详细</a>
-                  <Divider type="vertical" />
-                  <a onClick={() => this.spendList(record)}>费用详细</a>
-                </Fragment>
-              )
-            }
+              )     
           }
     
         },
@@ -187,6 +186,36 @@ export default class TabTable extends Component {
         toast.prompt('请先保存未完成的编辑任务!!!');
     }
   }
+
+  getRowByKey(id) {
+    const { data } = this.state;
+    let target, key;
+    data.map((item, index) => {
+      if (item._id === id ){
+        target = item;
+        key = index;
+      }
+    });
+    return { target, key };
+  }
+
+  onClose=(e,index,record)=>{
+      if(!e){
+        let  { data} = this.state;
+        delete data[index].editable
+        this.setState({ data ,editable: true});
+      } 
+  }
+
+  onSave = (date,index, record) => {     
+    const fahuo_time = date;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bund/updateTime',
+      payload: { id: record._id, fahuo_time },
+    });
+    this.setState({ target: {}, editable: true });
+  };
 
   detailList = record => {
     const { dispatch } = this.props;
@@ -231,21 +260,29 @@ export default class TabTable extends Component {
     return (
       <div className="tab-table">
         <IceContainer style={{ padding: '0 20px 20px' }}>
-          <Tab onChange={this.handleTabChange}>
-            {tabs.map((item) => {
-              return (
-                <TabPane tab={item.tab} key={item.key}>
-                  <CustomTable
-                    dataSource={data}
-                    columns={this.columns}
-                    hasBorder={false}
-                  />
-                </TabPane>
-              );
-            })}
-          </Tab>
+            <CustomTable
+            dataSource={data}
+            columns={this.columns}
+            />
         </IceContainer>
       </div>
     );
   }
 }
+
+
+
+const styles = {
+    contentText: {
+      padding: '5px 0 15px',
+    },
+    icon: {
+      color: '#2c72ee',
+      cursor: 'pointer',
+    },
+    deleteIcon: {
+      color:"red",
+      marginLeft: '20px',
+    },
+  };
+  

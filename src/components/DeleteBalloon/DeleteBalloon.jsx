@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Balloon } from '@icedesign/base';
+import { Button, Balloon,Icon } from '@icedesign/base';
 import PropTypes from 'prop-types';
 
 export default class DeleteBalloon extends Component {
@@ -33,9 +33,14 @@ export default class DeleteBalloon extends Component {
 
   render() {
     const visibleTrigger = (
-      <Button size="small" type="secondary" shape="warning">
+      <a size="small" type="secondary" shape="warning" style={{color:"red"}}>
         删除
-      </Button>
+      </a>
+    //   <Icon
+    //   type="ashbin"
+    //   size="small"
+    //   style={{ ...styles.icon, ...styles.deleteIcon }}
+    // />
     );
 
     const content = (
@@ -78,4 +83,13 @@ const styles = {
   contentText: {
     padding: '5px 0 15px',
   },
+  icon: {
+    color: '#2c72ee',
+    cursor: 'pointer',
+  },
+  deleteIcon: {
+    color:"red",
+    marginLeft: '20px',
+  },
 };
+

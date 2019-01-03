@@ -1,32 +1,32 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 //Create Schema
 const MedUsersSchema = new Schema({
   userName: {
     type: String,
-    rquired: true,
+    rquired: true
   },
   passWord: {
     type: String,
-    rquired: true,
+    rquired: true
   },
   name: {
-    type: String,
+    type: String
   },
   mobile: {
-    type: String,
-  }, 
-  currentAuthority:{
-    type:Array,
-    default:[]
+    type: String
+  },
+  currentAuthority: {
+    type: Array,
+    default: ["guest"]
   },
   create_at: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
-  key:{
-    type: Number,
+  lastLoginTime: {
+    type: Date
   }
 });
-module.exports = mongoose.model('med_users', MedUsersSchema);
+module.exports = mongoose.model("med_users", MedUsersSchema);

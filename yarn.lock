@@ -1060,7 +1060,7 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@icedesign/base@0.x", "@icedesign/base@^0.2.0", "@icedesign/base@^0.2.6":
+"@icedesign/base@0.x", "@icedesign/base@^0.2.0", "@icedesign/base@^0.2.5", "@icedesign/base@^0.2.6":
   version "0.2.6"
   resolved "http://registry.npm.taobao.org/@icedesign/base/download/@icedesign/base-0.2.6.tgz#41dc1d8913e590d25c80ecc112d97cf44aa6a125"
   integrity sha1-QdwdiRPlkNJcgOzBEtl89EqmoSU=
@@ -1149,6 +1149,14 @@
     prop-types "^15.5.10"
     rc-menu "^5.0.9"
     react "*"
+
+"@icedesign/notification@^0.2.0":
+  version "0.2.0"
+  resolved "http://registry.npm.taobao.org/@icedesign/notification/download/@icedesign/notification-0.2.0.tgz#cc801873412bd68c8cc0e9873537432243ab5a20"
+  integrity sha1-zIAYc0Er1oyMwOmHNTdDIkOrWiA=
+  dependencies:
+    "@icedesign/base" "^0.2.5"
+    rc-notification "^1.4.2"
 
 "@icedesign/skin@^0.1.0", "@icedesign/skin@^0.1.13":
   version "0.1.14"
@@ -8510,6 +8518,17 @@ rc-menu@^7.3.0, rc-menu@~7.4.12:
     rc-util "^4.1.0"
     resize-observer-polyfill "^1.5.0"
 
+rc-notification@^1.4.2:
+  version "1.4.3"
+  resolved "http://registry.npm.taobao.org/rc-notification/download/rc-notification-1.4.3.tgz#4eae85807bd7e5aee1c8927a5c9bebafe4e57787"
+  integrity sha1-Tq6FgHvX5a7hyJJ6XJvrr+Tld4c=
+  dependencies:
+    babel-runtime "^6.23.0"
+    classnames "2.x"
+    prop-types "^15.5.8"
+    rc-animate "2.x"
+    rc-util "4.x"
+
 rc-notification@~3.3.0:
   version "3.3.0"
   resolved "http://registry.npm.taobao.org/rc-notification/download/rc-notification-3.3.0.tgz#af74fe7fc9ee4040eaa5e72dbd6d4088a3ecae2d"
@@ -8715,7 +8734,7 @@ rc-upload@~2.6.0:
     prop-types "^15.5.7"
     warning "2.x"
 
-rc-util@^4.0.2, rc-util@^4.0.4, rc-util@^4.1.0, rc-util@^4.1.1, rc-util@^4.3.0, rc-util@^4.4.0, rc-util@^4.5.0, rc-util@^4.5.1:
+rc-util@4.x, rc-util@^4.0.2, rc-util@^4.0.4, rc-util@^4.1.0, rc-util@^4.1.1, rc-util@^4.3.0, rc-util@^4.4.0, rc-util@^4.5.0, rc-util@^4.5.1:
   version "4.6.0"
   resolved "http://registry.npm.taobao.org/rc-util/download/rc-util-4.6.0.tgz#ba33721783192ec4f3afb259e182b04e55deb7f6"
   integrity sha1-ujNyF4MZLsTzr7JZ4YKwTlXet/Y=

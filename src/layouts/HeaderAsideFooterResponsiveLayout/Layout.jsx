@@ -37,6 +37,11 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
 
   componentDidMount() {
     this.enquireScreenRegister();
+    const userName = JSON.parse(localStorage.getItem('userName'));
+    console.log(userName)
+        if (!userName) {
+          this.props.history.push('/login');
+        }
   }
 
   /**

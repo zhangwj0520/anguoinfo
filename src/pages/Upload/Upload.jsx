@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
 import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import UploadExcel from './components/UploadExcel'
+import { Upload, Button } from "@icedesign/base";
 import './Upload.scss'
 
-export default class Upload extends Component {
+export default class Uploads extends Component {
   static displayName = 'Upload';
 
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+beforeUpload=(info)=> {
+    console.log("beforeUpload callback : ", info);
+  }
+  
+ onChange=(info)=> {
+    console.log("onChane callback : ", info);
   }
 
   render() {
@@ -23,16 +32,5 @@ export default class Upload extends Component {
           <UploadExcel />
         </div>
       );
-    // return (
-    //   <div className="my-tab-page" >
-    //    <IceContainer>
-    //    <Button type="primary" onClick={this.onClick}>
-    //      <Icon type="atm" />主要按钮</Button> &nbsp;&nbsp;
-    //      <SheetJSApp/>
-    //     </IceContainer>
-        
-    //     {/* <BasicTab /> */}
-    //   </div>
-    // );
   }
 }

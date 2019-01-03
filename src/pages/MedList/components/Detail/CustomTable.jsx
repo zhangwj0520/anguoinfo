@@ -1,12 +1,13 @@
 /* eslint-disable react/no-unused-state, no-plusplus */
-import React, { Component } from 'react';
+import React, { Component,Fragment } from 'react';
 import { Table, Switch, Icon, Button, Grid, Pagination ,Input,Tag,Feedback,Dialog,Checkbox,Tab} from '@icedesign/base';
 import {Divider,Popconfirm} from 'antd'
 import IceContainer from '@icedesign/container';
 import { btnAuthority } from '../../../../utils/authority';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'dva';
-import DeleteBalloon from './DeleteBalloon';
+import DeleteBalloon from '../../../../components/DeleteBalloon';
+import CustomBreadcrumb from '../../../../components/CustomBreadcrumb';
 
 const { Row, Col } = Grid;
 const { toast } = Feedback;
@@ -16,8 +17,8 @@ const tabs = [{ tab: '全部', key: 'all' }, { tab: '已中标', key: 'zhongbiao
 
 @withRouter
 @connect(({ bund,loading }) => ({
-    bund,loading
-    //updatting: loading.effects['bund/updateOne'],
+    bund,
+    loading: loading.effects['bund/fetchOne'],
   }))
 export default class CustomTable extends Component {
   static displayName = 'CustomTable';
@@ -27,8 +28,22 @@ export default class CustomTable extends Component {
   static defaultProps = {};
 
   constructor(props) {
-    super(props);
-    this.columns = [
+    super(props); 
+    this.state = {
+      formValue: {},
+      current: 1,//
+      id: this.props.match.params.id,
+      sourseData:[],
+      data: [],
+      width: '100%',
+      loading: false,
+      target: {},
+      key: 0,
+      editable: true,
+      dataLen: 0,
+      changeZhongbiao:false,
+      cols:[],
+      columns:[
         {
           title: '序号',
           dataIndex:'id',
@@ -77,7 +92,6 @@ export default class CustomTable extends Component {
             if (record.isNew) {
               return (
                 <Input
-
                   defaultValue={record.origin}
                   onChange={e => this.handleFieldChange(e, 'name', record.name)}
                   onKeyPress={e => this.handleKeyPress(e, record.name)}
@@ -86,6 +100,25 @@ export default class CustomTable extends Component {
               );
             }
             return record.origin;
+          },
+        },
+        {
+          title: '类别',
+          dataIndex: 'type',       
+          key: 'type',
+          width: 70,
+          render: (text, index,record) => {
+            if (record.isNew) {
+              return (
+                <Input
+                  defaultValue={record.type}
+                  onChange={e => this.handleFieldChange(e, 'name')}
+                  onKeyPress={e => this.handleKeyPress(e, record.name)}
+                  placeholder="产地"
+                />
+              );
+            }
+            return record.type;
           },
         },
         {
@@ -99,7 +132,7 @@ export default class CustomTable extends Component {
                 <Input
                     multiple
                   defaultValue={record.description}
-                  onChange={e => this.handleFieldChange(e, 'remark', record.name)}
+                  onChange={e => this.handleFieldChange(e, 'remark')}
                   onKeyPress={e => this.handleKeyPress(e, record.name)}
                   placeholder="备注"
                 />
@@ -117,9 +150,8 @@ export default class CustomTable extends Component {
             if (record.isNew) {
               return (
                 <Input
-                  //defaultValue={(text)=>{return this.state.add?0:text}}
                   defaultValue={'0'}
-                  onChange={e => this.handleFieldChange(e, 'quantity', record.quantity)}
+                  onChange={e => this.handleFieldChange(e, 'quantity')}
                   onKeyPress={e => this.handleKeyPress(e, record.quantity)}
                   placeholder="计划采购量(Kg)"
                 />
@@ -297,70 +329,36 @@ export default class CustomTable extends Component {
             if (record.editable) {
               if (record.isNew) {
                 return (
-                  <span>
-                    <a onClick={e => this.saveRow(e, record.name)}>添加</a>
-                    <Divider type="vertical" />
-                    <Popconfirm title="是否要删除此行？" onConfirm={() => this.remove(record.name)}>
-                      <a>删除</a>
-                    </Popconfirm>
-                  </span>
+                    <Fragment>
+                        <a onClick={e => this.saveRow(e, record.id)}>添加</a>
+                        <span style={{marginLeft:"4px",marginRight:'4px'}}>|</span>
+                        <DeleteBalloon
+                            handleRemove={() => this.remove(record.id)}
+                        />
+                    </Fragment>
                 );
               }
               return (
-                <span>
-                  <Button type="primary"  onClick={e => this.saveRow(e, record.name)}>保存</Button>
-                  <Button type="secondary" onClick={e => this.cancel(e, record.name)}>取消</Button>
-                </span>
+                <Fragment>
+                    <a onClick={e => this.saveRow(e, record.id)}>保存</a>
+                    <span style={{marginLeft:"4px",marginRight:'4px'}}>|</span>
+                    <a style={{color:"red"}} onClick={e => this.cancel(e, record.id)}>取消</a>
+                </Fragment>
               );
             }
             return (
-                <span>
-                <Button
-                    size="small"
-                    type="primary"
-                    onClick={e => this.toggleEditable(e, record.name)}
-                    >
-                    编辑
-                    </Button>
-                    <Divider type="vertical" />
-                <DeleteBalloon
-                  handleRemove={() => this.remove(record.name)}
-                />
-              </span>
-            //   <span>
-            //     {btnAuthority('edit') ? (
-            //           <EditDialog
-            //           index={index}
-            //           record={record}
-            //           getFormValues={e => this.toggleEditable(e, record.name)}
-            //         />
-            //     ) : null}
-            //     {btnAuthority('delete') ? (
-            //           <DeleteBalloon
-            //           handleRemove={() => this.remove(record.name)}
-            //         />
-            //     ) : null}
-            //   </span>
+                <Fragment>
+                    <a onClick={e => this.toggleEditable(e, record.id)}>编辑</a>
+                    <span style={{marginLeft:"4px",marginRight:'4px'}}>|</span>
+                    <DeleteBalloon
+                        handleRemove={() => this.remove(record.id)}
+                    />
+                </Fragment>
             );
           },
         },
-      ];
+      ]
     
-    
-    this.state = {
-      formValue: {},
-      current: 1,//
-      id: this.props.match.params.id,
-      sourseData:[],
-      data: [],
-      width: '100%',
-      loading: false,
-      target: {},
-      key: 0,
-      editable: true,
-      dataLen: 0,
-      changeZhongbiao:false,
-      cols:this.columns
 
     };
    
@@ -375,11 +373,21 @@ export default class CustomTable extends Component {
     }
 
   static getDerivedStateFromProps(props, state) {
+      let cols=state.columns
     if (props.bund.oneListData !== state.sourseData) {
+         if(props.bund.oneListData[0]){
+             if(!props.bund.oneListData[0].origin){
+                cols=cols.filter((item)=>item.dataIndex!="origin")
+             }
+             if(props.bund.oneListData[0].type==="无"){
+                cols=cols.filter((item)=>item.dataIndex!="type")
+             }
+         }
       return {
         sourseData: props.bund.oneListData,
         data:props.bund.oneListData,
         dataLen:props.bund.oneListDataLen,
+        cols
       };
     }
     return null;
@@ -413,7 +421,6 @@ export default class CustomTable extends Component {
       content: this.renderControlContent(),
       title: "选择需要显示的列",
       onOk: () => {
-          console.log(this.changedCols)
         this.setState({
           cols: this.changedCols
         });
@@ -423,7 +430,7 @@ export default class CustomTable extends Component {
 
 
   renderControlContent=()=> {
-    const groupSource = this.columns.map(col => {
+    const groupSource = this.state.cols.map(col => {
         return {
           label: col.title,
           value: col.dataIndex
@@ -433,20 +440,19 @@ export default class CustomTable extends Component {
     return (
       <Group
         dataSource={groupSource}
-        onChange={this.onChange}
+        onChange={this.onChangeCols}
         defaultValue={defaultValue}
       />
     );
   }
-  onChange = value => {
-    this.changedCols = cols.filter(col => value.indexOf(col.dataIndex) > -1);
+  onChangeCols = value => {
+    this.changedCols = this.state.cols.filter(col => value.indexOf(col.dataIndex) > -1);
   };
 
 
-  remove(name) {
+  remove(rowid) {
     const { data, id } = this.state;
-    const newData = data.filter(item => item.name !== name);
-
+    const newData = data.filter(item => item.id !== rowid);
     const { dispatch } = this.props;
     dispatch({
     type: 'bund/updateOne',
@@ -454,9 +460,9 @@ export default class CustomTable extends Component {
     });
   }
 
-  handleKeyPress(e, key) {
+  handleKeyPress(e) {
     if (e.key === 'Enter') {
-      this.saveRow(e, key);
+      this.saveRow();
     }
   }
 
@@ -472,12 +478,12 @@ export default class CustomTable extends Component {
     }
   }
 
-  getRowByKey(name) {
+  getRowByKey(id) {
     const { data } = this.state;
     let target, key;
     //return  data.filter(item => item.name === name)[0];
     data.map((item, index) => {
-      if (item.name === name) {
+      if (item.id === id) {
         target = item;
         key = index;
       }
@@ -485,11 +491,11 @@ export default class CustomTable extends Component {
     return { target, key };
   }
 
-  toggleEditable = (e, name) => {
+  toggleEditable = (e, id) => {
     e.preventDefault();
     const { data, editable } = this.state;
     if (editable) {
-      const { target, key } = this.getRowByKey(name);
+      const { target, key } = this.getRowByKey(id);
       data[key].editable = true;
       this.setState({ data, target, key, editable: false });
     } else {
@@ -498,7 +504,7 @@ export default class CustomTable extends Component {
   };
 
   saveRow() {
-    let { data, target, key, editable, id } = this.state;
+    let { data, target, key, id } = this.state;
     let newData = data.map(item => ({ ...item }));
     delete target.editable;
     delete target.isNew;
@@ -551,18 +557,6 @@ export default class CustomTable extends Component {
   };
 
 
-  formChange = (value) => {
-    console.log('changed value', value);
-    this.setState({
-      formValue: value,
-    });
-  };
-
-
-
-  onChange = (...args) => {
-    console.log(...args);
-  };
 
   handlePaginationChange = (current) => {
     this.setState({
@@ -570,22 +564,16 @@ export default class CustomTable extends Component {
     });
   };
 
-  renderOper = () => {
-    return (
-      <div style={styles.oper}>
-        <Icon
-          type="edit"
-          size="small"
-          style={{ ...styles.icon, ...styles.editIcon }}
-        />
-        <Icon
-          type="ashbin"
-          size="small"
-          style={{ ...styles.icon, ...styles.deleteIcon }}
-        />
-      </div>
-    );
-  };
+  //导出报价单	
+  exportFile=()=> {
+        const { dispatch } = this.props;
+        const {id}=this.state
+        dispatch({
+        type: 'bund/exportFile',
+        payload:id
+        });
+	};
+
 
   // 
    renderColumns = () => {
@@ -613,54 +601,68 @@ export default class CustomTable extends Component {
   };
 
   render() {
-      const {data}=this.state
+      console.log(this.props.loading)
+      const {data,changeZhongbiao}=this.state
       const zhongbiaoList = data.filter(item => item.zhongbiao);
+      const breadcrumb = [
+        { text: '首页', link: '#/' },
+        { text: '账单列表', link: '#/bundlist' },
+        { text: '账单详细列表', link: '' },
+      ];
        return (
-      <IceContainer title="用户列表">
-        <Row wrap style={styles.headRow}>
-          <Col l="12">
-            <Button type="primary" style={styles.button} onClick={this.newMember}>
-              <Icon type="add" size="xs" style={{ marginRight: '4px' }} />添加新品种
-             </Button>        
-            <Button type="primary" style={styles.button} onClick={this.changeZhongbiaoState}>
-              <Icon type="add" size="xs" style={{ marginRight: '4px' }} />选择中标品种
-             </Button> 
-             <Button onClick={this.openDialog}> 选择显示的列数 </Button>       
-          </Col>
-          <Col l="12" style={styles.center}>
-            <Button type="normal" style={styles.button}>
-              删除
-            </Button>
-            <Button type="normal" style={{ ...styles.button, marginLeft: 10 }}>
-              导入
-            </Button>
-            <Button type="normal" style={{ ...styles.button, marginLeft: 10 }}>
-              下载
-            </Button>
-          </Col>
-        </Row>
+        <Fragment>
+        <CustomBreadcrumb dataSource={breadcrumb} />
+        <IceContainer title="账单详细列表">
+            <Row wrap style={styles.headRow}>
+            <Col l="12">
+                <Button type="secondary" style={styles.button}  onClick={this.newMember}>
+                <Icon type="add" size="xs" style={{ marginRight: '4px' }} />添加新品种
+                </Button>        
+                {!changeZhongbiao&&<Button type="primary" onClick={this.changeZhongbiaoState}>
+                    <Icon type="add" size="xs" style={{ marginRight: '4px' }} />选择中标品种
+       </Button> }
+                {changeZhongbiao&&<Button type="primary" onClick={this.changeZhongbiaoState}>
+                    保存中标品种
+       </Button> }
+                <Button onClick={this.openDialog}> 选择显示的列数 </Button>       
+            </Col>
+            
+            <Col l="12" style={styles.center}>
+                {/* <Button type="normal" style={styles.button}>
+                删除
+                </Button>
+                <Button type="normal" style={{ ...styles.button, marginLeft: 10 }}>
+                导入
+                </Button> */}
+                <Button type="primary" onClick={this.exportFile} style={{ ...styles.button, marginLeft: 10 }}>
+                导出报价
+                </Button>
+            </Col>
+            </Row>
 
-        <Tab onChange={this.handleTabChange}>
-            {tabs.map((item) => {
-              return (
-                <TabPane tab={item.tab} key={item.key}>
-                    <Table
-                        dataSource={item.key==="all"?data:zhongbiaoList}
-                        //   rowSelection={{ onChange: this.onChange }}
-                        >
-                        {this.renderColumns()}
-                        </Table>
-                </TabPane>
-              );
-            })}
-          </Tab>
-     
-        <Pagination
-          style={styles.pagination}
-          current={this.state.current}
-          onChange={this.handlePaginationChange}
-        />
-      </IceContainer>
+            <Tab onChange={this.handleTabChange}>
+                {tabs.map((item) => {
+                return (
+                    <TabPane tab={item.tab} key={item.key}>
+                        <Table
+                            isLoading={this.props.loading}
+                            dataSource={item.key==="all"?data:zhongbiaoList}
+                            // rowSelection={{ onChange: this.onChange }}
+                            >
+                            {/* {this.renderColumns()} */}
+                            </Table>
+                    </TabPane>
+                );
+                })}
+            </Tab>
+        
+            {/* <Pagination
+            style={styles.pagination}
+            current={this.state.current}
+            onChange={this.handlePaginationChange}
+            /> */}
+        </IceContainer>
+      </Fragment>
     );
   }
 }

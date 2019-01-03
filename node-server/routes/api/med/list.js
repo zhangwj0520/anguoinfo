@@ -12,6 +12,7 @@ const List = require("../../../module/Med_List");
 router.post("/add", (req, res) => {
   const ListFields = {};
   if (req.body.sn) ListFields.sn = req.body.sn;
+  if (req.body.fileName) ListFields.fileName = req.body.fileName;
   if (req.body.time) ListFields.time = req.body.time;
   if (req.body.vender) ListFields.vender = req.body.vender;
   if (req.body.venderType) ListFields.venderType = req.body.venderType;
@@ -33,11 +34,17 @@ router.post("/add", (req, res) => {
   if (req.body.dataSourse) ListFields.dataSourse = req.body.dataSourse;
   if (req.body.baojiao_index) ListFields.baojiao_index = req.body.baojiao_index;
 
-  new List(ListFields).save().then(List => {
-    res.json({
-      status: "ok",
-      data: List
-    });
+  List.findOne({ sn: req.body.sn }).then(list => {
+    if (list) {
+      return res.json({ status: "existence" });
+    } else {
+      new List(ListFields).save().then(List => {
+        res.json({
+          status: "ok",
+          data: List
+        });
+      });
+    }
   });
 });
 
@@ -178,37 +185,56 @@ router.post("/time/:id", (req, res) => {
       .catch(err => res.status(404).json(err));
   });
 });
-//更新花费情况
-router.post("/spend/:id", (req, res) => {
-  let { spendList } = req.body;
-  const { id } = req.params;
-  let spend = 0;
-  if (spendList.length != 0) {
-    for (let i = 0; i < spendList.length; i++) {
-      const cur = spendList[i];
-      spend += Number(cur.money);
-    }
-  }
-  List.findOneAndUpdate(
-    { _id: id },
-    {
-      $set: {
-        spendList,
-        spend
-      }
-    },
-    {
-      new: true
-    }
-  )
+
+//获取花费情况
+router.get("/spend/:id", (req, res) => {
+  List.findOne({ _id: req.params.id }, { dataSourse: 0, cols: 0, data: 0 })
     .then(List => {
       if (!List) {
         return res.status(404).json("没有任何数据");
       }
-      res.json(List);
+
+      res.json({
+        status: "ok",
+        spendList: List.spendList
+      });
     })
     .catch(err => res.status(404).json(err));
 });
+// //更新花费情况
+// router.post("/spend/:id", (req, res) => {
+//   let { spendList } = req.body;
+//   const { id } = req.params;
+//   let spend = 0;
+//   if (spendList.length != 0) {
+//     for (let i = 0; i < spendList.length; i++) {
+//       const cur = spendList[i];
+//       spend += Number(cur.money);
+//     }
+//   }
+//   List.findOneAndUpdate(
+//     { _id: id },
+//     {
+//       $set: {
+//         spendList,
+//         spend
+//       }
+//     },
+//     {
+//       new: true
+//     }
+//   )
+//     .then(List => {
+//       if (!List) {
+//         return res.status(404).json("没有任何数据");
+//       }
+//       res.json({
+//         status: "ok",
+//         spendList: List.spendList
+//       });
+//     })
+//     .catch(err => res.status(404).json(err));
+// });
 
 //$route POST api/Lists/delete/:id
 //@desc 删除信息接口
@@ -221,39 +247,63 @@ router.delete("/delete/:id", (req, res) => {
     .catch(err => res.status(404).json("删除失败"));
 });
 
-//报价
+//导出
+router.get("/export/:id", (req, res) => {
+  List.findOne({ _id: req.params.id }, { data: 0, cols: 0, spendList: 0 })
+    .then(List => {
+      if (!List) {
+        return res.status(404).json("没有任何数据");
+      }
+
+      res.json({
+        status: "ok",
+        exportListData: List.dataSourse,
+        fileName: List.fileName
+      });
+    })
+    .catch(err => res.status(404).json(err));
+});
+
+//
 //查询medlist
 router.post("/find", (req, res) => {
   const { name } = req.body;
-  List.find(
-    { "data.name": { $eq: name } },
+  console.log(name);
+  List.aggregate([
     {
-      vender: 1,
-      venderType: 1,
-      dingdan_time: 1,
-      fahuo_time: 1,
-      "data.$": 1,
-      _id: 0
+      $project: {
+        data: {
+          $filter: {
+            input: "$data",
+            as: "item",
+            cond: {
+              $and: [
+                { $eq: ["$$item.type", "无"] },
+                { $eq: ["$$item.name", name] }
+              ]
+            }
+          }
+        },
+        fahuo_time: 1,
+        _id: 0
+      }
     }
-  ).then(list => {
-    res.json({ list, status: "ok" });
+  ]).then(List => {
+    let list = [];
+    List.map(item => {
+      if (item.data.length != 0) {
+        item.data[0].time = item.time;
+        delete item.data[0].id;
+        list.push({ ...item.data[0] });
+      }
+    });
+    res.json(list);
   });
 });
 
-//查询所有药品名字
-router.post("/name", (req, res) => {
-  let ary = [];
-  List.aggregate([
-    { $group: { _id: "$data.name", num_tutorial: { $sum: 1 } } }
-  ]).then(List => {
-    if (List) {
-      List.map(item => {
-        ary = ary.concat(item._id);
-      });
-    }
-    let list = Array.from(new Set(ary));
-    res.json(list);
-  });
+//查询所有med名字
+router.post("/namelist", (req, res) => {
+  List.distinct("data.name").then(List => res.json(List));
 });
 
 module.exports = router;

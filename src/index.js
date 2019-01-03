@@ -6,6 +6,7 @@ import "@icedesign/base/reset.scss";
 import "antd/dist/antd.css";
 import router from "./router";
 import createLoading from "dva-loading";
+import browserHistory from "history/createBrowserHistory";
 
 const ICE_CONTAINER = document.getElementById("ice-container");
 

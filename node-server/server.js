@@ -44,7 +44,7 @@ app.use(bodyParser.json());
 app.use("/med/user", users);
 app.use("/med/list", askPriceList);
 
-const port = process.env.PORT || 6666;
+const port = process.env.PORT || 8989;
 
 app.listen(port, () => {
   console.log(`Server running on port ` + port);

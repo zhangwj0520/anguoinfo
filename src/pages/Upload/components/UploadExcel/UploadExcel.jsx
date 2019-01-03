@@ -22,26 +22,17 @@ class UploadExcel extends Component {
 		};
 		// this.exportFile = this.exportFile.bind(this);
 	};
-	handleFile=e=> {
-        const file = e.target.files[0];
+	handleFile=(file)=> {
         const outputs = []; //清空接收数据
-		/* Boilerplate to set up FileReader */
+        //const outputs = {"无":[],"同仁堂":[],"医院":[]}; //清空接收数据
 		const reader = new FileReader();
 		const rABS = !!reader.readAsBinaryString;
 		reader.onload = (e) => {
-			/* Parse data */
 			const bstr = e.target.result;
-			const wb = XLSX.read(bstr, {type:rABS ? 'binary' : 'array'});
-			/* Get first worksheet */
+            const wb = XLSX.read(bstr, {type:rABS ? 'binary' : 'array'});
 			const wsname = wb.SheetNames[0];
 			const ws = wb.Sheets[wsname];
-			//console.log(ws)
-			/* Convert array of arrays */
-			const data = XLSX.utils.sheet_to_json(ws, {header:1});
-			//const aoa = XLSX.utils.sheet_to_csv(ws);
-        //    console.log(data)
-        //    console.log(ws)
-        //    console.log(make_cols(ws['!ref']))
+            let data = XLSX.utils.sheet_to_json(ws, {header:1});
            if (data.length) {
             let flag = 0,
               i = 0,
@@ -52,17 +43,16 @@ class UploadExcel extends Component {
               zhongbiao = '',
               description = '',
               specifications = '',
-              jiesuan = 0,
-              origin = '';
-            for (; i < 4; i++) {
+              origin = '',
+              type='';
+            for (; i < 5; i++) {
               let cur = data[i];
               //console.log(cur)
-              for (let m = 0; m < cur.length - 1; m++) {
-                if (cur[m] == null) {
-                  cur[m] = 'null';
-                }
-              }
-              // console.log(cur);
+            //   for (let m = 0; m < cur.length - 1; m++) {
+            //     if (cur[m] == null) {
+            //       cur[m] = 'null';
+            //     }
+            //   }
               for (let [index, elem] of cur.entries()) {
                 // 匹配订单编号
                 let sn = /[a-zA-Z]{2,3}(\d{8})$/g.exec(elem);
@@ -81,10 +71,12 @@ class UploadExcel extends Component {
                     vender: vender[0],
                   });
                 }
+                if (/^1$/g.test(elem)) {
+                    flag = i;
+                  }
                 // 品名
                 if (/\u54c1\u540d/g.test(elem)) {
                   name = index;
-                  flag = i;
                 }
                 // 采购量
                 if (/\u91c7\u8d2d\u91cf/g.test(elem)) {
@@ -100,7 +92,6 @@ class UploadExcel extends Component {
                 // 采购价
                 if (/\u91c7\u8d2d\u4ef7/g.test(elem)) {
                   caigou_price = index;
-                  console.log(elem);
                 }
                 // 中标
                 if (/\u4e2d\u6807/g.test(elem)) {
@@ -118,6 +109,10 @@ class UploadExcel extends Component {
                 if (/\u4ea7\u5730/g.test(elem)) {
                   origin = index;
                 }
+                // 客户
+                if (/\u5ba2\u6237/g.test(elem)) {
+                  type = index;
+                }
                 // // 是否结算
                 // if (/\u662f\u5426\u7ed3\u7b97/g.test(elem)) {
                 //   jiesuan = index;
@@ -125,39 +120,43 @@ class UploadExcel extends Component {
               }
             }
             //console.log(`循环从${flag}开始`);
-            for (let j = flag + 1; j <= data.length - 1; j++) {
-              let cur = data[j];
+            for (let j = flag; j <= data.length - 1; j++) {
+              let cur = data[j]; 
+              if(cur.length===0) break     
               let obj = {
-                id: j - i,
+                id: cur[0],
                 name: cur[name],
                 quantity: cur[quantity],
                 dingdan_price: cur[dingdan_price]||0,
                 caigou_price: cur[caigou_price] || 0,
                 zhongbiao: cur[zhongbiao] || 0,
                 specifications: cur[specifications],
-                origin: cur[origin],
+                origin: cur[origin]||'',
                 description: cur[description],
+                type:cur[type]||"无",
                 jiesuan:0, //结算
                 back_quantity: 0, //退尾料
                 settlement: 0, //
               };
               outputs.push(obj);
+              //outputs[obj.type].push(obj);
             }
-          } else {
-            
-          }
-          //console.log(outputs);
- 
-			this.setState({ data: outputs ,dataSourse: data,ws:ws, cols: make_cols(ws['!ref'])});
+           }
+           
+            // for(const keyss in outputs){
+            //     if(outputs[keyss].length===0){
+            //         delete outputs[keyss]
+            //     }
+            // }
+			this.setState({ fileName:file.name.split('.')[0],data: outputs ,dataSourse: data,ws:ws, cols: make_cols(ws['!ref'])},);
 		};
 		if(rABS) reader.readAsBinaryString(file); else reader.readAsArrayBuffer(file);
     };
     onSave=()=>{
-        console.log('保存成功')
         const { dispatch } = this.props;
-        const { dataSourse, sn, vender, dingdan_time,baojiao_index,cols ,data} = this.state;
+        const { dataSourse, sn, vender, dingdan_time,baojiao_index,cols ,data,fileName} = this.state;
         //console.log(key)
-        let values = { sn, vender,baojiao_index,cols ,data ,dataSourse};
+        let values = { sn, vender,baojiao_index,cols ,data ,dataSourse,fileName};
         values.time = Number(dingdan_time);
         values.key = sn;
         dispatch({
@@ -166,19 +165,15 @@ class UploadExcel extends Component {
         });
     }
 	exportFile=()=> {
-		/* convert state to workbook */
-        const ws = XLSX.utils.aoa_to_sheet(this.state.data);
-        //const aa=XLSX.utils.sheet_add_json(this.state.data)
-		//const ws = this.state.ws;
+        const ws = XLSX.utils.aoa_to_sheet(this.state.dataSourse);
 		const wb = XLSX.utils.book_new();
 		XLSX.utils.book_append_sheet(wb, ws, "SheetJS");
-		/* generate XLSX file and send to client */
-		XLSX.writeFile(wb, "sheetjs.xlsx")
+        XLSX.writeFile(wb, "sheetjs.xlsx")
 	};
 
   render() {
     const {dataSourse}=this.state
-    console.log(this.state)
+    //console.log(this.state)
 
     return (
       <div className="upload">
@@ -188,7 +183,7 @@ class UploadExcel extends Component {
                     <Button style={styles.button} type="primary">
                         <Icon type="add" />上传文件
                     </Button>
-                    <input type="file" style={styles.input} accept={SheetJSFT} onChange={this.handleFile} />
+                    <input type="file" style={styles.input} accept={SheetJSFT} onChange={(e)=>this.handleFile(e.target.files[0])} />
                 </Col>
                 <Col span={12} className={styles.btn_addPic}>
                     {dataSourse.length ? (
@@ -198,14 +193,15 @@ class UploadExcel extends Component {
                     ) : null}
                 </Col>
              </Row>
-	            <div className="row"><div className="col-xs-12">
-		            <button disabled={!this.state.dataSourse.length} className="btn btn-success" onClick={this.exportFile}>Export</button>
-	            </div></div>
 	            {/* <div className="row"><div className="col-xs-12">
-		            <OutTable data={this.state.data} cols={this.state.cols} />
-	            </div></div> */}           
+		            <button disabled={!this.state.dataSourse.length} className="btn btn-success" onClick={this.exportFile}>Export</button>
+                </div></div> */}
+                  <OutTable data={this.state.dataSourse} cols={this.state.cols} />
+	         
         </IceContainer>
-        <BasicTab data={this.state.dataSourse} cols={this.state.cols}/>
+        {/* <BasicTab data={this.state.dataSourse} cols={this.state.cols}/> */}
+      
+
       </div>
     );
   }

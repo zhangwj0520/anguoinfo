@@ -5,11 +5,20 @@ import Layout from '@icedesign/layout';
 import Menu from '@icedesign/menu';
 import FoundationSymbol from 'foundation-symbol';
 import cx from 'classnames';
-import { Link } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { headerMenuConfig } from './../menuConfig';
 import Logo from './Logo';
 
+@withRouter
 export default class Header extends PureComponent {
+
+
+  logout=()=>{
+      console.log('tuichu')
+      localStorage.clear()
+      this.props.history.push('/login');
+  }
+
   render() {
     const { width, theme, isMobile, className, style } = this.props;
 
@@ -81,15 +90,15 @@ export default class Header extends PureComponent {
                 />
                 <div className="user-profile">
                   <span className="user-name" style={{ fontSize: '13px' }}>
-                    淘小宝
+                    {JSON.parse(localStorage.getItem('userName'))}
                   </span>
-                  <br />
+                  {/* <br />
                   <span
                     className="user-department"
                     style={{ fontSize: '12px', color: '#999' }}
                   >
                     技术部
-                  </span>
+                  </span> */}
                 </div>
                 <Icon
                   type="arrow-down-filling"
@@ -112,10 +121,10 @@ export default class Header extends PureComponent {
                   <FoundationSymbol type="repair" size="small" />设置
                 </Link>
               </li>
-              <li className="user-profile-menu-item">
-                <Link to="/">
+              <li className="user-profile-menu-item" onClick={this.logout}>
+                {/* <Link to="/"> */}
                   <FoundationSymbol type="compass" size="small" />退出
-                </Link>
+                {/* </Link> */}
               </li>
             </ul>
           </Balloon>

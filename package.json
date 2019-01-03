@@ -12,6 +12,7 @@
     "@icedesign/label": "^0.1.5",
     "@icedesign/layout": "^0.1.0",
     "@icedesign/menu": "^0.1.0",
+    "@icedesign/notification": "^0.2.0",
     "@icedesign/skin": "^0.1.0",
     "antd": "^3.11.6",
     "axios": "^0.17.1",
@@ -21,6 +22,7 @@
     "dva-loading": "^2.0.6",
     "enquire-js": "^0.1.2",
     "foundation-symbol": "^0.1.0",
+    "history": "^4.7.2",
     "immutable": "^3.8.2",
     "is-hotkey": "^0.1.1",
     "prop-types": "^15.5.8",
@@ -70,10 +72,5 @@
     "node": ">=8.0.0"
   },
   "title": "CMS",
-  "proxyConfig": {
-    "/med": {
-      "enable": true,
-      "target": "http://127.0.0.1:6666"
-    }
-  }
+  "proxyConfig": {}
 }

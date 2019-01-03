@@ -17,7 +17,7 @@ export default class UserList extends Component {
   render() {
     const breadcrumb = [
       { text: '用户管理', link: '' },
-      { text: '用户列表', link: '#/user/list' },
+      { text: '用户列表', link: '/user/list' },
     ];
     return (
       <div className="user-list-page">

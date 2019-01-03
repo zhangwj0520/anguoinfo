@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import TabTable from './components/TabTable';
+import MedLists from './components/MedList';
 import CustomBreadcrumb from '../../components/CustomBreadcrumb';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -15,31 +15,15 @@ export default class MedList extends Component {
     this.state = {};
   }
 
-//   componentDidMount() {
-//     const { dispatch } = this.props;
-//     dispatch({
-//       type: 'bund/fetch',
-//     });
-//   }
-
-//   static getDerivedStateFromProps(props, state) {
-//     if (props.bund.data.list !== state.data) {
-//       return {
-//         data: props.bund.data.list,
-//       };
-//     }
-//     return null;
-//   }
-
   render() {
     const breadcrumb = [
-        { text: '用户管理', link: '' },
-        { text: '用户列表', link: '#/user/list' },
+        { text: '首页', link: '#/' },
+        { text: '账单列表', link: '#/bundlist' },
       ];
     return (
       <div className="med-list-page">
-      <CustomBreadcrumb dataSource={breadcrumb} />
-        <TabTable/>
+        <CustomBreadcrumb dataSource={breadcrumb} />
+        <MedLists/>
       </div>
     );
   }

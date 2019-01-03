@@ -9,20 +9,15 @@ import UserList from "./pages/UserList";
 import CreateUser from "./pages/CreateUser";
 import EditPassword from "./pages/EditPassword";
 import NotFound from "./pages/NotFound";
-
 import Upload from "./pages/Upload";
 import MedList from "./pages/MedList";
 import Detail from "./pages/MedList/components/Detail";
-
-import Page19 from "./pages/Page19";
+import Spend from "./pages/MedList/components/Spend";
+import Registers from "./pages/Registers";
+import Page11 from "./pages/Page11";
 import Login from "./pages/Login";
 
 const routerConfig = [
-  {
-    path: "/login",
-    layout: BlankLayout,
-    component: Login
-  },
   {
     path: "/user",
     layout: HeaderAsideFooterResponsiveLayout,
@@ -66,9 +61,24 @@ const routerConfig = [
     component: Detail
   },
   {
-    path: "/page19",
+    path: "/bundlist/spend/:id",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: Page19
+    component: Spend
+  },
+  {
+    path: "/login",
+    layout: BlankLayout,
+    component: Login
+  },
+  {
+    path: "/register",
+    layout: BlankLayout,
+    component: Registers
+  },
+  {
+    path: "/page11",
+    layout: HeaderAsideFooterResponsiveLayout,
+    component: Page11
   },
   {
     path: "*",
