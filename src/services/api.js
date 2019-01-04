@@ -85,7 +85,6 @@ export async function exportFileList(params) {
 
 //medmane
 export async function queryMedNameList() {
-  console.log(11111);
   return request("/med/list/namelist", {
     method: "POST"
   });

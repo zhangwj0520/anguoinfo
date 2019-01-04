@@ -218,11 +218,9 @@ export default class TabTable extends Component {
   };
 
   detailList = record => {
-    const { dispatch } = this.props;
     this.props.history.push(`/bundlist/detail/${record._id}`);
   };
   spendList = record => {
-    const { dispatch } = this.props;
     this.props.history.push(`/bundlist/spend/${record._id}`);
   };
   deleteLite = id => {

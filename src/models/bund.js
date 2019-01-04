@@ -27,7 +27,7 @@ export default {
     oneListDataLen: 0,
     spendList: [],
     spendListLen: 0,
-    MedList: []
+    MedNameList: []
   },
 
   effects: {
@@ -42,6 +42,7 @@ export default {
     //查询单个
     *fetchOne({ payload }, { call, put }) {
       const response = yield call(queryOneList, payload);
+      console.log(response);
       yield put({
         type: "queryOne",
         payload: response
@@ -100,11 +101,10 @@ export default {
 
     *fetchMedName({}, { call, put }) {
       const response = yield call(queryMedNameList);
-      console.log(response);
-      //   yield put({
-      //     type: "queryMedList",
-      //     payload: response
-      //   });
+      yield put({
+        type: "queryMedNameList",
+        payload: response
+      });
     },
     *fetchOneMed({ payload }, { call, put }) {
       const response = yield call(fakeMedChartData, payload);
@@ -152,6 +152,7 @@ export default {
         MedList: payload
       };
     },
+
     queryOne(state, { payload }) {
       const { oneListData } = payload;
       return {
@@ -185,6 +186,12 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "SheetJS");
       XLSX.writeFile(wb, `${fileName}-盛大 - 张增欣 - 报价.xlsx`);
       toast.success("订单导出成功");
+    },
+    queryMedNameList(state, { payload }) {
+      return {
+        ...state,
+        MedNameList: payload
+      };
     }
   }
 };
