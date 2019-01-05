@@ -14,6 +14,7 @@
     "@icedesign/menu": "^0.1.0",
     "@icedesign/notification": "^0.2.0",
     "@icedesign/skin": "^0.1.0",
+    "antd": "^3.11.6",
     "bizcharts": "3.1.0",
     "classnames": "^2.2.5",
     "dva": "^2.4.1",
@@ -23,6 +24,8 @@
     "history": "^4.7.2",
     "immutable": "^3.8.2",
     "is-hotkey": "^0.1.1",
+    "lodash": "^4.17.11",
+    "moment": "^2.23.0",
     "prop-types": "^15.5.8",
     "react": "^16.4.1",
     "react-document-title": "^2.0.3",
@@ -70,5 +73,10 @@
     "node": ">=8.0.0"
   },
   "title": "CMS",
-  "proxyConfig": {}
+  "proxyConfig": {
+    "//www.easy-mock.com/mock/5b960dce7db69152d06475bc/ice/upload": {
+      "enable": true,
+      "target": "www.easy-mock.com/mock/5b960dce7db69152d06475bc/ice/upload"
+    }
+  }
 }

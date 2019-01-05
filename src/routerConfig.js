@@ -2,95 +2,89 @@
 // 你可以调整 routerConfig 里的内容
 // 变量名 routerConfig 为 iceworks 检测关键字，请不要修改名称
 
-import HeaderAsideFooterResponsiveLayout from './layouts/HeaderAsideFooterResponsiveLayout';
-import BlankLayout from './layouts/BlankLayout';
-import Dashboard from './pages/Dashboard';
-import UserList from './pages/UserList';
-import CreateUser from './pages/CreateUser';
-import EditPassword from './pages/EditPassword';
-import NotFound from './pages/NotFound';
-import Upload from './pages/Upload';
-import MedList from './pages/MedList';
-import Detail from './pages/MedList/components/Detail';
-import Spend from './pages/MedList/components/Spend';
-import Registers from './pages/Registers';
-import Page11 from './pages/Page11';
-import Page12 from './pages/Page12';
-import Login from './pages/Login';
+import HeaderAsideFooterResponsiveLayout from "./layouts/HeaderAsideFooterResponsiveLayout";
+import BlankLayout from "./layouts/BlankLayout";
+import Dashboard from "./pages/Dashboard";
+import UserList from "./pages/UserList";
+import CreateUser from "./pages/CreateUser";
+import EditPassword from "./pages/EditPassword";
+import NotFound from "./pages/NotFound";
+import Upload from "./pages/Upload";
+import MedList from "./pages/MedList";
+import Detail from "./pages/MedList/components/Detail";
+import Spend from "./pages/MedList/components/Spend";
+import Registers from "./pages/Registers";
+import AllMedName from "./pages/AllMedName";
+import Login from "./pages/Login";
 
 const routerConfig = [
   {
-    path: '/bundlist/spend/:id',
+    path: "/bundlist/spend/:id",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: Spend,
+    component: Spend
   },
   {
-    path: '/user',
+    path: "/user",
     layout: HeaderAsideFooterResponsiveLayout,
     component: UserList,
     children: [
       {
-        path: 'list',
+        path: "list",
         layout: HeaderAsideFooterResponsiveLayout,
-        component: UserList,
+        component: UserList
       },
       {
-        path: 'create',
+        path: "create",
         layout: HeaderAsideFooterResponsiveLayout,
-        component: CreateUser,
+        component: CreateUser
       },
       {
-        path: 'pwd',
+        path: "pwd",
         layout: HeaderAsideFooterResponsiveLayout,
-        component: EditPassword,
-      },
-    ],
+        component: EditPassword
+      }
+    ]
   },
   {
-    path: '/upload',
+    path: "/upload",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: Upload,
+    component: Upload
   },
   {
-    path: '/bundlist',
+    path: "/bundlist",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: MedList,
+    component: MedList
   },
   {
-    path: '/bundlist/detail/:id',
+    path: "/bundlist/detail/:id",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: Detail,
+    component: Detail
   },
   {
-    path: '/',
+    path: "/",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: Dashboard,
+    component: Dashboard
   },
   {
-    path: '/login',
+    path: "/login",
     layout: BlankLayout,
-    component: Login,
+    component: Login
   },
   {
-    path: '/register',
+    path: "/register",
     layout: BlankLayout,
-    component: Registers,
+    component: Registers
   },
   {
-    path: '/page11',
+    path: "/allmedname",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: Page11,
+    component: AllMedName
   },
   {
-    path: '/page12',
+    path: "*",
     layout: HeaderAsideFooterResponsiveLayout,
-    component: Page12,
-  },
-  {
-    path: '*',
-    layout: HeaderAsideFooterResponsiveLayout,
-    component: NotFound,
-  },
+    component: NotFound
+  }
 ];
 
 export default routerConfig;

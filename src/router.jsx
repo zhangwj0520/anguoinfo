@@ -1,11 +1,9 @@
 /**
  * 定义应用路
  */
-import { Switch, Route, Router } from 'react-router-dom';
+//import { Switch, Route, Router } from 'react-router-dom';
+import { Router, Route, Switch, Redirect } from 'dva/router';
 import React from 'react';
-import { LocaleProvider } from 'antd';
-import zhCN from 'antd/lib/locale-provider/zh_CN';
-
 import routerConfig from './routerConfig';
 
 /**
@@ -121,9 +119,7 @@ const routeChildren = renderRouterConfigV4(null, routerWithReactRouter4, '/');
 // export default <Router>{routeChildren}</Router>;
 function RouterConfig({history}) {
     return (
-      <LocaleProvider locale={zhCN}>
         <Router history={history}>{routeChildren}</Router>
-      </LocaleProvider>
     );
   }
   

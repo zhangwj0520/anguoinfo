@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import IceContainer from '@icedesign/container';
-import { Tab } from '@icedesign/base';
-import axios from 'axios';
+import { Tab,Tag } from '@icedesign/base';
 import CustomTable from './components/CustomTable';
 import EditDialog from './components/EditDialog';
 import DeleteBalloon from './components/DeleteBalloon';
+import { connect } from 'dva';
+import {auth} from '../../../../common/config';
 
 const TabPane = Tab.TabPane;
 
-const tabs = [{ tab: '全部', key: 'all' }, { tab: '审核中', key: 'review' }];
+const tabs = [{ tab: '全部', key: 'ok' }, { tab: '审核中', key: 'no' }];
 
+@connect(({ user}) => ({
+    user
+  }))
 export default class TabTable extends Component {
   static displayName = 'TabTable';
 
@@ -19,46 +23,46 @@ export default class TabTable extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      dataSource: {},
-      tabKey: 'all',
-    };
     this.columns = [
       {
         title: 'ID',
         dataIndex: 'id',
         key: 'id',
         width: 50,
+        render: (text, index,record) => {
+            return index + 1;
+          },
       },
       {
         title: '用户名',
-        dataIndex: 'username',
-        key: 'username',
+        dataIndex: 'userName',
+        key: 'userName',
         width: 100,
       },
       {
-        title: '邮箱',
-        dataIndex: 'email',
-        key: 'email',
-        width: 150,
+        title: '姓名',
+        dataIndex: 'name',
+        key: 'name',
+        width: 100,
       },
       {
-        title: '用户组',
-        dataIndex: 'group',
-        key: 'group',
-        width: 120,
+        title: '允许登录',
+        dataIndex: 'ok',
+        key: 'ok',
+        width: 100,
+        render:(text, index,record)=>{
+            let login=record.ok==="ok"?"是":"否"
+            return <Tag size="small" color="#87d068" selected={true}>{login}</Tag>
+        }
       },
       {
-        title: '文章数',
-        dataIndex: 'articleNum',
-        key: 'articleNum',
-        width: 80,
-      },
-      {
-        title: '评论数',
-        dataIndex: 'commentNum',
-        key: 'commentNum',
-        width: 80,
+        title: '用户权限',
+        dataIndex: 'currentAuthority',
+        key: 'currentAuthority',
+        width: 300,
+        render: (text, index,record) => {
+            return record.currentAuthority.map((item)=><Tag size="small" color="#87d068" selected={true}>{auth[item]}</Tag>)          
+          },
       },
       {
         title: '注册时间',
@@ -68,8 +72,8 @@ export default class TabTable extends Component {
       },
       {
         title: '最后登录时间',
-        dataIndex: 'LastLoginTime',
-        key: 'LastLoginTime',
+        dataIndex: 'lastLoginTime',
+        key: 'lastLoginTime',
         width: 150,
       },
       {
@@ -80,57 +84,71 @@ export default class TabTable extends Component {
           return (
             <span>
               <EditDialog
-                index={index}
                 record={record}
                 getFormValues={this.getFormValues}
               />
               <DeleteBalloon
-                handleRemove={() => this.handleRemove(value, index, record)}
+                handleRemove={() => this.handleRemove(record)}
               />
             </span>
           );
         },
       },
     ];
+    this.state = {
+        dataSource: {},
+        tabKey: 'ok',
+        cols:this.columns   
+      };
   }
 
   componentDidMount() {
-    axios
-      .get('/mock/user-list.json')
-      .then((response) => {
-        this.setState({
-          dataSource: response.data.data,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+      const {dispatch}=this.props
+      dispatch({
+        type: 'user/fetchAllUsers',
       });
   }
+  static getDerivedStateFromProps(props, state) {
+    if (props.user.allUsersData !== state.dataSource) {   
+      return {
+        dataSource:props.user.allUsersData
+      };
+    }
+    return null;
+  }
 
-  getFormValues = (dataIndex, values) => {
-    const { dataSource, tabKey } = this.state;
-    dataSource[tabKey][dataIndex] = values;
-    this.setState({
-      dataSource,
-    });
+  getFormValues = (values) => {
+    const {dispatch}=this.props
+      dispatch({
+        type: 'user/update',
+        payload:values
+      });
   };
 
-  handleRemove = (value, index) => {
-    const { dataSource, tabKey } = this.state;
-    dataSource[tabKey].splice(index, 1);
-    this.setState({
-      dataSource,
+  handleRemove = (values) => {
+    const {dispatch}=this.props
+    dispatch({
+      type: 'user/delete',
+      payload:values
     });
   };
 
   handleTabChange = (key) => {
+      let cols=[]
+    if(key==="ok"){
+        cols=this.columns.filter((item)=>item)
+    }else{
+        cols=this.columns.filter((item)=>item.dataIndex!="currentAuthority")
+    }
     this.setState({
       tabKey: key,
+      cols
     });
   };
 
   render() {
-    const { dataSource } = this.state;
+    const { dataSource ,cols} = this.state;
+
     return (
       <div className="tab-table">
         <IceContainer style={{ padding: '0 20px 20px' }}>
@@ -140,7 +158,7 @@ export default class TabTable extends Component {
                 <TabPane tab={item.tab} key={item.key}>
                   <CustomTable
                     dataSource={dataSource[this.state.tabKey]}
-                    columns={this.columns}
+                    columns={cols}
                     hasBorder={false}
                   />
                 </TabPane>

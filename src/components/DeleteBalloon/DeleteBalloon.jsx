@@ -34,7 +34,7 @@ export default class DeleteBalloon extends Component {
   render() {
     const visibleTrigger = (
       <a size="small" type="secondary" shape="warning" style={{color:"red"}}>
-        删除
+        {this.props.title||"删除"}
       </a>
     //   <Icon
     //   type="ashbin"

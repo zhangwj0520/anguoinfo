@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dialog, Button, Form, Input, Field } from '@icedesign/base';
+import { Dialog, Button, Form, Input, Field ,Select } from '@icedesign/base';
 
 const FormItem = Form.Item;
 
@@ -12,7 +12,6 @@ export default class EditDialog extends Component {
     super(props);
     this.state = {
       visible: false,
-      dataIndex: null,
     };
     this.field = new Field(this);
   }
@@ -24,19 +23,17 @@ export default class EditDialog extends Component {
         return;
       }
 
-      const { dataIndex } = this.state;
-      this.props.getFormValues(dataIndex, values);
+      this.props.getFormValues(values);
       this.setState({
         visible: false,
       });
     });
   };
 
-  onOpen = (index, record) => {
+  onOpen = (record) => {
     this.field.setValues({ ...record });
     this.setState({
       visible: true,
-      dataIndex: index,
     });
   };
 
@@ -48,7 +45,8 @@ export default class EditDialog extends Component {
 
   render() {
     const init = this.field.init;
-    const { index, record } = this.props;
+    const {record } = this.props;
+    console.log(record)
     const formItemLayout = {
       labelCol: {
         fixedSpan: 6,
@@ -57,13 +55,22 @@ export default class EditDialog extends Component {
         span: 14,
       },
     };
+    const dataSource = [
+        {label:'游客', value:"0"},
+        {label:'管理员', value:"1"},
+        {label:'超级管理员', value:"2"}
+    ]
+    const dataSourceok = [
+        {label:'是', value:"ok"},
+        {label:'否', value:"no"},
+    ]
 
     return (
       <div style={styles.editDialog}>
         <Button
           size="small"
           type="primary"
-          onClick={() => this.onOpen(index, record)}
+          onClick={() => this.onOpen(record)}
         >
           编辑
         </Button>
@@ -79,46 +86,35 @@ export default class EditDialog extends Component {
           <Form direction="ver" field={this.field}>
             <FormItem label="用户名：" {...formItemLayout}>
               <Input
-                {...init('username', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem>
-
-            <FormItem label="邮箱：" {...formItemLayout}>
-              <Input
-                {...init('email', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem>
-
-            <FormItem label="用户组：" {...formItemLayout}>
-              <Input
-                {...init('group', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem>
-
-            <FormItem label="文章数：" {...formItemLayout}>
-              <Input
                 disabled
-                {...init('articleNum', {
+                {...init('userName', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />
             </FormItem>
 
-            <FormItem label="评论数：" {...formItemLayout}>
+            <FormItem label="姓名：" {...formItemLayout}>
               <Input
-                disabled
-                {...init('commentNum', {
+                {...init('name', {
                   rules: [{ required: true, message: '必填选项' }],
                 })}
               />
             </FormItem>
-
+            <FormItem label="允许登录：" {...formItemLayout}>
+              <Select dataSource={dataSourceok}
+                {...init('ok', {
+                  rules: [{ required: true, message: '必填选项' }],
+                })}
+              />
+            </FormItem>
+            <FormItem label="用户权限：" {...formItemLayout}>
+              <Select dataSource={dataSource}
+                    multiple
+                {...init('currentAuthority', {
+                  rules: [{ required: true, message: '必填选项' }],
+                })}
+              />
+            </FormItem>
             <FormItem label="注册时间：" {...formItemLayout}>
               <Input
                 disabled
@@ -131,8 +127,7 @@ export default class EditDialog extends Component {
             <FormItem label="最后登录时间：" {...formItemLayout}>
               <Input
                 disabled
-                {...init('LastLoginTime', {
-                  rules: [{ required: true, message: '必填选项' }],
+                {...init('lastLoginTime', {
                 })}
               />
             </FormItem>

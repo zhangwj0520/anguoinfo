@@ -520,6 +520,11 @@ mimic-fn@^1.0.0:
   resolved "http://registry.npm.taobao.org/mimic-fn/download/mimic-fn-1.2.0.tgz#820c86a39334640e99516928bd03fca88057d022"
   integrity sha1-ggyGo5M0ZA6ZUWkovQP8qIBX0CI=
 
+moment@^2.23.0:
+  version "2.23.0"
+  resolved "http://registry.npm.taobao.org/moment/download/moment-2.23.0.tgz#759ea491ac97d54bac5ad776996e2a58cc1bc225"
+  integrity sha1-dZ6kkayX1UusWtd2mW4qWMwbwiU=
+
 mongodb-core@3.1.9:
   version "3.1.9"
   resolved "http://registry.npm.taobao.org/mongodb-core/download/mongodb-core-3.1.9.tgz#c31ee407bf932b0149eaed775c17ee09974e4ca3"

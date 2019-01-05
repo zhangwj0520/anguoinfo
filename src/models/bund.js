@@ -11,7 +11,9 @@ import {
   querySpendList,
   updateSpend,
   exportFileList,
-  fakeMedChartData
+  fakeMedChartData,
+  updateOnePrice,
+  deleteOneMed
 } from "../services/api";
 import XLSX from "xlsx";
 import { Feedback } from "@icedesign/base";
@@ -27,7 +29,8 @@ export default {
     oneListDataLen: 0,
     spendList: [],
     spendListLen: 0,
-    MedNameList: []
+    MedNameList: [],
+    ChartList: []
   },
 
   effects: {
@@ -42,7 +45,6 @@ export default {
     //查询单个
     *fetchOne({ payload }, { call, put }) {
       const response = yield call(queryOneList, payload);
-      console.log(response);
       yield put({
         type: "queryOne",
         payload: response
@@ -56,6 +58,16 @@ export default {
         type: "queryOne",
         payload: response
       });
+    },
+    //删除一个品种
+    *deleteOne({ payload }, { call, put }) {
+      const response = yield call(deleteOneMed, payload);
+      console.log(response);
+      //toast.success("数据更新成功");
+      //   yield put({
+      //     type: "queryOne",
+      //     payload: response
+      //   });
     },
     *deleteList({ payload }, { call, put }) {
       const response = yield call(removeList, payload);
@@ -108,34 +120,18 @@ export default {
     },
     *fetchOneMed({ payload }, { call, put }) {
       const response = yield call(fakeMedChartData, payload);
-      console.log(response);
-      //   yield put({
-      //     type: "queryMedList",
-      //     payload: response
-      //   });
+      yield put({
+        type: "queryChartList",
+        payload: response
+      });
+    },
+    *updatePrice({ payload }, { call, put }) {
+      const response = yield call(updateOnePrice, payload);
+      yield put({
+        type: "queryOne",
+        payload: response
+      });
     }
-
-    // *appendFetch({ payload }, { call, put }) {
-    //   const response = yield call(queryFakeList, payload);
-    //   yield put({
-    //     type: "appendList",
-    //     payload: Array.isArray(response) ? response : []
-    //   });
-    // },
-    // *submit({ payload }, { call, put }) {
-    //   let callback;
-    //   if (payload.id) {
-    //     callback =
-    //       Object.keys(payload).length === 1 ? removeFakeList : updateFakeList;
-    //   } else {
-    //     callback = addFakeList;
-    //   }
-    //   const response = yield call(callback, payload); // post
-    //   yield put({
-    //     type: "queryList",
-    //     payload: response
-    //   });
-    // }
   },
 
   reducers: {
@@ -191,6 +187,12 @@ export default {
       return {
         ...state,
         MedNameList: payload
+      };
+    },
+    queryChartList(state, { payload }) {
+      return {
+        ...state,
+        ChartList: payload
       };
     }
   }

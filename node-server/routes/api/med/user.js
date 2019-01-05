@@ -5,12 +5,14 @@ const crypto = require("crypto");
 const gravatar = require("gravatar");
 const MedUsers = require("../../../module/Med_Users");
 const passport = require("passport");
+const moment = require("moment");
 
 //$route POST api/users/register
 //@desc 返回的请求的json数据
 //@access public
 router.post("/register", (req, res) => {
   //查询数据库中是否有该用户
+  const regTime = moment().format("YYYY-MM-DD HH:mm:ss");
   let { userName, passWord } = req.body;
   MedUsers.findOne({
     userName: userName
@@ -22,7 +24,9 @@ router.post("/register", (req, res) => {
       let newPass = md5.update(passWord).digest("hex");
       const newUser = new MedUsers({
         userName: userName,
-        passWord: newPass
+        passWord: newPass,
+        regTime,
+        key: regTime
       });
       newUser
         .save()
@@ -35,25 +39,37 @@ router.post("/register", (req, res) => {
 //更新
 router.post("/update", (req, res) => {
   //查询数据库中是否有该用户
-  console.log(req.body);
-  const { name, mobile, _id, currentAuthority } = req.body;
+  const { name, ok, _id, currentAuthority } = req.body;
+  console.log(_id);
+  console.log(ok);
   MedUsers.findOneAndUpdate(
     { _id },
     {
       $set: {
         currentAuthority,
         name,
-        mobile
+        ok
       }
+    },
+    {
+      new: true
     }
-    //).then(List => res.json({oneList:List,status: 'ok'}));
   ).then(() =>
-    MedUsers.find()
+    MedUsers.aggregate([
+      {
+        $group: {
+          _id: "$ok",
+          data: { $push: "$$ROOT" }
+        }
+      }
+    ])
       .then(List => {
         if (!List) {
           return res.status(404).json("没有任何数据");
         }
-        res.json({ List, status: "ok" });
+        let list = {};
+        List.map(item => [(list[item._id] = item.data)]);
+        res.json(list);
       })
       .catch(err => res.status(404).json(err))
   );
@@ -62,7 +78,26 @@ router.post("/update", (req, res) => {
 router.post("/delete", (req, res) => {
   //查询数据库中是否有该用户
   const { name, mobile, _id } = req.body;
-  MedUsers.deleteOne({ _id }).then(List => res.json({ status: "ok" }));
+  if (name === "admin") return null;
+  MedUsers.deleteOne({ _id }).then(List => {
+    MedUsers.aggregate([
+      {
+        $group: {
+          _id: "$ok",
+          data: { $push: "$$ROOT" }
+        }
+      }
+    ])
+      .then(List => {
+        if (!List) {
+          return res.status(404).json("没有任何数据");
+        }
+        let list = {};
+        List.map(item => [(list[item._id] = item.data)]);
+        res.json(list);
+      })
+      .catch(err => res.status(404).json(err));
+  });
 });
 
 //$route POST api/users/test
@@ -70,7 +105,7 @@ router.post("/delete", (req, res) => {
 //@access public
 router.post("/login", (req, res) => {
   const userName = req.body.userName;
-  const lastLoginTime = new Date();
+  const lastLoginTime = moment().format("YYYY-MM-DD HH:mm:ss");
   //查询数据库
   MedUsers.findOneAndUpdate(
     {
@@ -89,21 +124,18 @@ router.post("/login", (req, res) => {
     }
     //密码匹配
     //console.log(user)
-    const { passWord, currentAuthority, userName } = user;
+    const { passWord, currentAuthority, userName, ok } = user;
     let md5 = crypto.createHash("md5");
     let newPass = md5.update(req.body.passWord).digest("hex");
     if (newPass === passWord) {
-      if (currentAuthority.length == 0) {
+      if (ok === "no") {
         res.send({
           userName,
-          message: "请申请权限",
-          status: "noauth",
-          currentAuthority
+          status: "noauth"
         });
       } else {
         res.send({
           userName,
-          message: "登录成功",
           status: "ok",
           currentAuthority
         });
@@ -119,12 +151,21 @@ router.post("/login", (req, res) => {
 //@access private
 
 router.get("/current", (req, res) => {
-  MedUsers.find()
+  MedUsers.aggregate([
+    {
+      $group: {
+        _id: "$ok",
+        data: { $push: "$$ROOT" }
+      }
+    }
+  ])
     .then(List => {
       if (!List) {
         return res.status(404).json("没有任何数据");
       }
-      res.json(List);
+      let list = {};
+      List.map(item => [(list[item._id] = item.data)]);
+      res.json(list);
     })
     .catch(err => res.status(404).json(err));
 });

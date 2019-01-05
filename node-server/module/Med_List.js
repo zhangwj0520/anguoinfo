@@ -11,10 +11,6 @@ const ProfileSchema = new Schema({
     type: String,
     rquired: true
   },
-  time: {
-    type: Number,
-    rquired: true
-  },
   fahuo_time: {
     type: String,
     rquired: true

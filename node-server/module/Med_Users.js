@@ -12,21 +12,22 @@ const MedUsersSchema = new Schema({
     rquired: true
   },
   name: {
-    type: String
-  },
-  mobile: {
-    type: String
+    type: String,
+    default: "新用户"
   },
   currentAuthority: {
     type: Array,
-    default: ["guest"]
-  },
-  create_at: {
-    type: Date,
-    default: Date.now
+    default: ["0"]
   },
   lastLoginTime: {
-    type: Date
+    type: String
+  },
+  regTime: {
+    type: String
+  },
+  ok: {
+    type: String,
+    default: "no"
   }
 });
 module.exports = mongoose.model("med_users", MedUsersSchema);

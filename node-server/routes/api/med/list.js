@@ -162,6 +162,50 @@ router.post("/edit/:id", (req, res) => {
     res.json({ oneListData: List.data, status: "ok" });
   });
 });
+//更新报价
+router.post("/updateprice", (req, res) => {
+  const { data, id } = req.body;
+  const {
+    name,
+    dingdan_price,
+    caigou_price,
+    jiesuan,
+    remark,
+    back_quantity
+  } = data;
+
+  List.update(
+    { _id: id, "data.name": name },
+    {
+      $set: {
+        "data.$.dingdan_price": dingdan_price,
+        "data.$.caigou_price": caigou_price,
+        "data.$.jiesuan": jiesuan,
+        "data.$.back_quantity": back_quantity,
+        "data.$.remark": remark
+      }
+    },
+    {
+      new: true
+    }
+  ).then(() => {
+    List.findOne({ _id: id }, { dataSourse: 0, cols: 0, spendList: 0 })
+      .then(List => {
+        if (!List) {
+          return res.status(404).json("没有任何数据");
+        }
+        res.json({
+          status: "ok",
+          oneListData: List.data
+        });
+      })
+      .catch(err =>
+        res.json({
+          status: "error"
+        })
+      );
+  });
+});
 
 //更新时间
 router.post("/time/:id", (req, res) => {
@@ -201,40 +245,6 @@ router.get("/spend/:id", (req, res) => {
     })
     .catch(err => res.status(404).json(err));
 });
-// //更新花费情况
-// router.post("/spend/:id", (req, res) => {
-//   let { spendList } = req.body;
-//   const { id } = req.params;
-//   let spend = 0;
-//   if (spendList.length != 0) {
-//     for (let i = 0; i < spendList.length; i++) {
-//       const cur = spendList[i];
-//       spend += Number(cur.money);
-//     }
-//   }
-//   List.findOneAndUpdate(
-//     { _id: id },
-//     {
-//       $set: {
-//         spendList,
-//         spend
-//       }
-//     },
-//     {
-//       new: true
-//     }
-//   )
-//     .then(List => {
-//       if (!List) {
-//         return res.status(404).json("没有任何数据");
-//       }
-//       res.json({
-//         status: "ok",
-//         spendList: List.spendList
-//       });
-//     })
-//     .catch(err => res.status(404).json(err));
-// });
 
 //$route POST api/Lists/delete/:id
 //@desc 删除信息接口
@@ -267,8 +277,7 @@ router.get("/export/:id", (req, res) => {
 //
 //查询medlist
 router.post("/find", (req, res) => {
-  const { name } = req.body;
-  console.log(name);
+  const { name, type, id } = req.body;
   List.aggregate([
     {
       $project: {
@@ -278,22 +287,35 @@ router.post("/find", (req, res) => {
             as: "item",
             cond: {
               $and: [
-                { $eq: ["$$item.type", "无"] },
+                { $eq: ["$$item.type", type] },
                 { $eq: ["$$item.name", name] }
               ]
             }
           }
         },
-        fahuo_time: 1,
-        _id: 0
+        dingdan_time: 1,
+        _id: 1
       }
     }
   ]).then(List => {
     let list = [];
     List.map(item => {
       if (item.data.length != 0) {
-        item.data[0].time = item.time;
+        //   if (item._id != id && item.data.length != 0) {
+        item.data[0].time = item.dingdan_time;
+        item.data[0]["采购价格"] = item.data[0].caigou_price;
+        item.data[0]["订单价格"] = item.data[0].dingdan_price;
         delete item.data[0].id;
+        delete item.data[0].description;
+        delete item.data[0].back_quantity;
+        delete item.data[0].jiesuan;
+        delete item.data[0].key;
+        delete item.data[0].origin;
+        delete item.data[0].settlement;
+        delete item.data[0].caigou_price;
+        delete item.data[0].dingdan_price;
+        delete item.data[0].type;
+        delete item.data[0].specifications;
         list.push({ ...item.data[0] });
       }
     });

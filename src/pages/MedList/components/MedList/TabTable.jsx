@@ -5,7 +5,6 @@ import moment from 'moment';
 import CustomTable from './components/CustomTable';
 import { withRouter } from 'react-router-dom';
 import { btnAuthority } from '../../../../utils/authority';
-import {Divider} from 'antd'
 import { connect } from 'dva';
 import EditDialog from './components/EditDialog';
 import DeleteBalloon from '../../../../components/DeleteBalloon';

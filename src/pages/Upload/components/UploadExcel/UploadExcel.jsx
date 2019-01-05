@@ -124,7 +124,7 @@ class UploadExcel extends Component {
               let cur = data[j]; 
               if(cur.length===0) break     
               let obj = {
-                id: cur[0],
+                key: cur[0],
                 name: cur[name],
                 quantity: cur[quantity],
                 dingdan_price: cur[dingdan_price]||0,
@@ -137,6 +137,7 @@ class UploadExcel extends Component {
                 jiesuan:0, //结算
                 back_quantity: 0, //退尾料
                 settlement: 0, //
+                
               };
               outputs.push(obj);
               //outputs[obj.type].push(obj);
@@ -156,9 +157,11 @@ class UploadExcel extends Component {
         const { dispatch } = this.props;
         const { dataSourse, sn, vender, dingdan_time,baojiao_index,cols ,data,fileName} = this.state;
         //console.log(key)
-        let values = { sn, vender,baojiao_index,cols ,data ,dataSourse,fileName};
-        values.time = Number(dingdan_time);
+        let values = { sn, vender,baojiao_index,cols ,data ,dataSourse,fileName,dingdan_time};
+        // values.time = Number(dingdan_time);
+        // console.log(dingdan_time)
         values.key = sn;
+        console.log(values)
         dispatch({
             type: 'file/upload',
             payload: values,

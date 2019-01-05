@@ -47,6 +47,24 @@ export async function updateOneList(params) {
     body: { data }
   });
 }
+//更新某个报价
+export async function updateOnePrice(params) {
+  //console.log(params)
+  const { id, data } = params;
+  return request(`/med/list/updateprice`, {
+    method: "POST",
+    body: { data, id }
+  });
+}
+//删除单个品种
+export async function deleteOneMed(params) {
+  //console.log(params)
+  const { id, name } = params;
+  return request(`/med/list/deleteOneMed`, {
+    method: "POST",
+    body: { name, id }
+  });
+}
 //删除订单
 export async function removeList(params) {
   return request("/med/list/delete", {
@@ -93,6 +111,26 @@ export async function queryMedNameList() {
 export async function fakeMedChartData(params) {
   //console.log(params)
   return request("/med/list/find", {
+    method: "POST",
+    body: params
+  });
+}
+
+//获取所有用户
+export async function queryAllUsers() {
+  return request("/med/user/current");
+}
+
+//更新用户设置
+export async function userUpdate(params) {
+  return request("/med/user/update", {
+    method: "POST",
+    body: params
+  });
+}
+//更新用户设置
+export async function userDelete(params) {
+  return request("/med/user/delete", {
     method: "POST",
     body: params
   });
