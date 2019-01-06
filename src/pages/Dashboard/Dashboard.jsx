@@ -3,7 +3,6 @@ import StatisticalCard from "./components/StatisticalCard";
 import DataStatistics from "./components/DataStatistics";
 import RealTimeStatistics from "./components/RealTimeStatistics";
 import LatestNews from "./components/LatestNews";
-import { connect } from "dva";
 import "./Dashboard.scss";
 
 class Dashboard extends Component {
