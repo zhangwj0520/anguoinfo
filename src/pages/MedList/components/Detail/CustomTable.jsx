@@ -15,7 +15,8 @@ import {
   Tab,
   Field,
   Form,
-  Select
+  Select,
+  NumberPicker
 } from "@icedesign/base";
 import IceContainer from "@icedesign/container";
 import { btnAuthority } from "../../../../utils/authority";
@@ -23,7 +24,6 @@ import { withRouter } from "react-router-dom";
 import { connect } from "dva";
 import DeleteBalloon from "../../../../components/DeleteBalloon";
 import CustomBreadcrumb from "../../../../components/CustomBreadcrumb";
-import EditDialog from "./EditDialog";
 import { Chart, Axis, Geom, Tooltip, Legend } from "bizcharts";
 import { DataSet } from "@antv/data-set";
 import _ from "lodash";
@@ -35,7 +35,7 @@ const { toast } = Feedback;
 const { Group } = Checkbox;
 const TabPane = Tab.TabPane;
 const FormItem = Form.Item;
-const tabs = [{ tab: "全部", key: "all" }, { tab: "OK", key: "zhongbiao" }];
+const tabs = [{ tab: "全部", key: "all" }, { tab: "已中标", key: "zhongbiao" }];
 
 @withRouter
 @connect(({ bund, loading }) => ({
@@ -44,9 +44,7 @@ const tabs = [{ tab: "全部", key: "all" }, { tab: "OK", key: "zhongbiao" }];
 }))
 export default class CustomTable extends Component {
   static displayName = "CustomTable";
-
   static propTypes = {};
-
   static defaultProps = {};
 
   constructor(props) {
@@ -88,24 +86,37 @@ export default class CustomTable extends Component {
             if (record.isNew) {
               return (
                 <Input
-                  defaultValue={record.name}
-                  onChange={e => this.handleFieldChange(e, "name", record.name)}
+                  onChange={val => this.handleFieldChange(val, "name")}
                   onKeyPress={e => this.handleKeyPress(e, record.name)}
                   placeholder="品名"
                 />
               );
             }
             if (this.state.changeZhongbiao) {
-              return (
-                <Tag
-                  color="#87d068"
-                  defaultSelected={record.zhongbiao}
-                  onSelect={Bo => {
-                    this.changeZhongbiao(Bo, index);
-                  }}>
-                  {record.name}
-                </Tag>
-              );
+              if(record.zhongbiao){
+                return (
+                  <Tag
+                    color="#87d068"
+                    defaultSelected={true}
+                    onSelect={Bo => {
+                      this.changeZhongbiao(Bo, index);
+                    }}>
+                    {record.name}
+                  </Tag>
+                );
+              }else{
+                return (
+                  <Tag
+                    color="#87d068"
+                    defaultSelected={false}
+                    onSelect={Bo => {
+                      this.changeZhongbiao(Bo, index);
+                    }}>
+                    {record.name}
+                  </Tag>
+                );
+              }
+             
             }
             if (record.zhongbiao) {
               return (
@@ -137,7 +148,7 @@ export default class CustomTable extends Component {
               return (
                 <Input
                   defaultValue={record.origin}
-                  onChange={e => this.handleFieldChange(e, "name", record.name)}
+                  onChange={e => this.handleFieldChange(e, "origin")}
                   onKeyPress={e => this.handleKeyPress(e, record.name)}
                   placeholder="产地"
                 />
@@ -156,9 +167,9 @@ export default class CustomTable extends Component {
               return (
                 <Input
                   defaultValue={record.type}
-                  onChange={e => this.handleFieldChange(e, "name")}
+                  onChange={e => this.handleFieldChange(e, "type")}
                   onKeyPress={e => this.handleKeyPress(e, record.name)}
-                  placeholder="产地"
+                  placeholder="类别"
                 />
               );
             }
@@ -176,7 +187,7 @@ export default class CustomTable extends Component {
                 <Input
                   multiple
                   defaultValue={record.description}
-                  onChange={e => this.handleFieldChange(e, "remark")}
+                  onChange={e => this.handleFieldChange(e, "description")}
                   onKeyPress={e => this.handleKeyPress(e, record.name)}
                   placeholder="备注"
                 />
@@ -206,7 +217,7 @@ export default class CustomTable extends Component {
         },
         {
           title: "订单单价(元)",
-          dataIndex: "dingdan_price",
+          dataIndex: "dingdan_price", 
           key: "dingdan_price",
           width: 100,
           render: (text, index, record) => {
@@ -214,9 +225,9 @@ export default class CustomTable extends Component {
               return (
                 <Input
                   defaultValue={record.dingdan_price}
-                  onBlur={e =>
+                  onChange={e =>
                     this.handleFieldChange(
-                      e.target.value,
+                      e,
                       "dingdan_price",
                       record.name
                     )
@@ -239,8 +250,8 @@ export default class CustomTable extends Component {
               return (
                 <Input
                   defaultValue={record.caigou_price}
-                  onBlur={e =>
-                    this.handleFieldChange(e.target.value, "caigou_price")
+                  onChange={e =>
+                    this.handleFieldChange(e, "caigou_price")
                   }
                   onKeyPress={e => this.handleKeyPress(e, record.name)}
                   placeholder="采购单价(元)"
@@ -283,7 +294,7 @@ export default class CustomTable extends Component {
           render: (text, index, record) => {
             if (record.jiesuan) {
               return (
-                record.caigou_price *
+                record.dingdan_price *
                 (parseFloat(record.quantity) - parseFloat(record.back_quantity))
               ).toFixed(2);
             }
@@ -377,7 +388,7 @@ export default class CustomTable extends Component {
               if (record.isNew) {
                 return (
                   <Fragment>
-                    <a onClick={e => this.saveRow(e, record.key)}>添加</a>
+                    <a onClick={e => this.saveRow(1)}>添加</a>
                     <span style={{ marginLeft: "4px", marginRight: "4px" }}>
                       |
                     </span>
@@ -390,7 +401,7 @@ export default class CustomTable extends Component {
               }
               return (
                 <Fragment>
-                  <a onClick={e => this.saveRow(record)}>保存</a>
+                  <a onClick={e => this.saveRow()}>保存</a>
                   <span style={{ marginLeft: "4px", marginRight: "4px" }}>
                     |
                   </span>
@@ -411,10 +422,10 @@ export default class CustomTable extends Component {
                   }>
                   编辑
                 </a>
-                {/* <span style={{marginLeft:"4px",marginRight:'4px'}}>|</span>
+                <span style={{marginLeft:"4px",marginRight:'4px'}}>|</span>
                     <DeleteBalloon
-                        handleRemove={() => this.remove(record.id)}
-                    /> */}
+                        handleRemove={() => this.remove(1,index)}
+                    />
               </Fragment>
             );
           }
@@ -461,7 +472,7 @@ export default class CustomTable extends Component {
     if (changeZhongbiao) {
       const { dispatch } = this.props;
       dispatch({
-        type: "bund/updateOne",
+        type: "bund/updatezb",
         payload: { data: zbData, id }
       });
       this.setState({ changeZhongbiao: false, data: zbData });
@@ -478,7 +489,7 @@ export default class CustomTable extends Component {
 
   changeZhongbiao(Bo, index) {
     const { zbData } = this.state;
-    zbData[index].zhongbiao = Bo;
+    zbData[index].zhongbiao = Bo?1:0;
   }
 
   openDialog = () => {
@@ -516,9 +527,18 @@ export default class CustomTable extends Component {
     );
   };
 
-  remove() {
-    const { data } = this.state;
-    data.shift();
+  remove(tag,index) {
+    const { data ,id} = this.state;
+    if(tag){
+      const newData = data.filter((item,i) => i!=index);
+      const { dispatch } = this.props;
+      dispatch({
+        type: "bund/updatezb",
+        payload: { data: newData, id }
+      });
+    }else{
+      data.shift();
+    } 
     this.setState({ editable: true });
   }
 
@@ -529,13 +549,17 @@ export default class CustomTable extends Component {
   }
 
   handleFieldChange(value, fieldName) {
+    console.log(value);
     const { target } = this.state;
     if (target) {
       if (fieldName == "zhongbiao" || fieldName == "jiesuan") {
         target[fieldName] = value ? 1 : 0;
-      } else {
+      } else if(fieldName ==="quantity"||fieldName ==="dingdan_price"||fieldName === "caigou_price"){
         target[fieldName] = Number(value);
+      }else{
+        target[fieldName] = value;
       }
+
       this.setState({ target });
     }
   }
@@ -565,17 +589,26 @@ export default class CustomTable extends Component {
     }
   };
 
-  saveRow() {
-    const { data, target, key, id } = this.state;
-    const newData = data.map(item => ({ ...item }));
-    delete target.editable;
-    delete target.isNew;
-    newData[key] = target;
+  saveRow(tag) {
+    const {target, id ,data,key} = this.state;
     const { dispatch } = this.props;
-    dispatch({
-      type: "bund/updateOne",
-      payload: { data: newData, id }
-    });
+       delete target.editable;
+        delete target.isNew;
+
+    if(tag){
+      data[key]=target;
+      dispatch({
+        type: "bund/updatezb",
+        payload: { data, id }
+      });
+
+    }else{
+      dispatch({
+            type: "bund/updateOne",
+            payload: { data: target, id }
+          });
+          }
+    
     this.setState({ editable: true });
   }
 
@@ -910,21 +943,17 @@ export default class CustomTable extends Component {
               </FormItem>
 
               <FormItem label="订单单价(元)：" {...formItemLayout}>
-                <Input hasClear {...init("dingdan_price", {})} />
+                <NumberPicker  type="inline" inputWidth={"120px"} hasClear {...init("dingdan_price", {})} />
               </FormItem>
 
               <FormItem label="采购单价(元)：" {...formItemLayout}>
-                <Input hasClear {...init("caigou_price", {})} />
+                <NumberPicker type="inline" inputWidth={"120px"} hasClear {...init("caigou_price", {})} />
               </FormItem>
               <FormItem label="是否结算：" {...formItemLayout}>
-                {/* <Input
-                {...init('jiesuan', {
-                })}
-              /> */}
                 <Select dataSource={JSData} {...init("jiesuan", {})} />
               </FormItem>
               <FormItem label="退尾料：" {...formItemLayout}>
-                <Input hasClear {...init("back_quantity", {})} />
+                <NumberPicker type="inline" inputWidth={"120px"} hasClear {...init("back_quantity", {})} />
               </FormItem>
               <FormItem label="备注：" {...formItemLayout}>
                 <Input multiple {...init("remark", {})} />

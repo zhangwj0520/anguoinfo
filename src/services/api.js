@@ -40,11 +40,18 @@ export async function queryOneList(params) {
 
 //更新某个订单
 export async function updateOneList(params) {
-  //console.log(params)
   const { id, data } = params;
-  return request(`/med/list/edit/${id}`, {
+  return request(`/med/list/edit`, {
     method: "POST",
-    body: { data }
+    body: { data, id }
+  });
+}
+//更新某个中标
+export async function updateZhongbiao(params) {
+  const { id, data } = params;
+  return request(`/med/list/editzhongbiao`, {
+    method: "POST",
+    body: { data, id }
   });
 }
 //更新某个报价

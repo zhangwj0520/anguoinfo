@@ -101,8 +101,8 @@ export default class TabTable extends Component {
       },
       {
         title: '已结算金额(元)',
-        dataIndex: 'jiesuan_price',
-        key: 'jiesuan_price',
+        dataIndex: 'jiesuan_totalPrice',
+        key: 'jiesuan_totalPrice',
         width: 120,
       },
       {
@@ -120,24 +120,20 @@ export default class TabTable extends Component {
         title: '结算状态',
         dataIndex: 'status',
         width: 100,
-        filters: [
-          {
-            text: status[0],
-            value: 0,
-          },
-          {
-            text: status[1],
-            value: 1,
-          },
-          {
-            text: status[2],
-            value: 2,
-          },
-        ],
         render (text, index, record) {
+          const {jiesuanNum,zhongbiaoNum}=record
+          let status='未结算';
+          if(zhongbiaoNum!=0){
+            if(jiesuanNum<zhongbiaoNum){
+              status="部分结算"
+            }
+            if(jiesuanNum===zhongbiaoNum){
+              status="全部结算"
+            }
+          }
           return (
             <Fragment>
-              {statusMap[record.status]}
+              {status}
             </Fragment>
           );
         },

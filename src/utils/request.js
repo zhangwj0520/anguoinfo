@@ -1,8 +1,6 @@
 import fetch from "dva/fetch";
 import Notification from "@icedesign/notification";
 
-//import Config from '../common/config';
-
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
