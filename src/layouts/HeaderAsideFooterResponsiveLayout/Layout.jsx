@@ -47,8 +47,8 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
    * 注册监听屏幕的变化，可根据不同分辨率做对应的处理
    */
   enquireScreenRegister = () => {
-    const isMobile = 'screen and (max-width: 720px)';
-    const isTablet = 'screen and (min-width: 721px) and (max-width: 1199px)';
+    const isMobile = 'screen and (max-width: 900px)';
+    const isTablet = 'screen and (min-width: 901px) and (max-width: 1199px)';
     const isDesktop = 'screen and (min-width: 1200px)';
 
     enquire.register(isMobile, this.enquireScreenHandle('isMobile'));

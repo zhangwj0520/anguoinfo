@@ -1,63 +1,56 @@
-import React, { Component } from 'react';
-import IceContainer from '@icedesign/container';
-import { enquireScreen } from 'enquire-js';
-import { Balloon, Icon, Grid } from '@icedesign/base';
+import React, { Component } from "react";
+import IceContainer from "@icedesign/container";
+import { enquireScreen } from "enquire-js";
+import { Balloon, Icon, Grid } from "@icedesign/base";
+import { connect } from "dva";
 
 const { Row, Col } = Grid;
 
-const dataSource = [
-  {
-    text: '昨日浏览次数',
-    number: '6,657',
-    imgUrl: require('./images/TB1tlVMcgmTBuNjy1XbXXaMrVXa-140-140.png'),
-    desc: '相关说明',
-  },
-  {
-    text: '总访问数',
-    number: '12,896',
-    imgUrl: require('./images//TB1Py4_ceuSBuNjy1XcXXcYjFXa-142-140.png'),
-    desc: '相关说明',
-  },
-  {
-    text: '总订阅数',
-    number: '9,157',
-    imgUrl: require('./images/TB1Ni4_ceuSBuNjy1XcXXcYjFXa-142-140.png'),
-    desc: '相关说明',
-  },
-  {
-    text: '总收入数',
-    number: '6,682',
-    imgUrl: require('./images/TB1iFKccamWBuNjy1XaXXXCbXXa-140-140.png'),
-    desc: '相关说明',
-  },
-];
-
-export default class StatisticalCard extends Component {
-  static displayName = 'StatisticalCard';
+class StatisticalCard extends Component {
+  static displayName = "StatisticalCard";
 
   constructor(props) {
     super(props);
     this.state = {
       isMobile: false,
+      sumData: {
+        dingdan_tPrice: 0,
+        zhongbiao_tPrice: 0,
+        caigou_tPrice: 0,
+        jiesuan_tPrice: 0
+      }
     };
   }
 
   componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "bund/fetchAll"
+    });
     this.enquireScreenRegister();
   }
 
-  enquireScreenRegister = () => {
-    const mediaCondition = 'only screen and (max-width: 720px)';
+  static getDerivedStateFromProps(props, state) {
+    if (props.bund.sumData != state.sumData) {
+      return {
+        sumData: props.bund.sumData
+      };
+    }
+    return null;
+  }
 
-    enquireScreen((mobile) => {
+  enquireScreenRegister = () => {
+    const mediaCondition = "only screen and (max-width: 720px)";
+
+    enquireScreen(mobile => {
       this.setState({
-        isMobile: mobile,
+        isMobile: mobile
       });
     }, mediaCondition);
   };
 
-  renderItem = () => {
-    const itemStyle = this.state.isMobile ? { justifyContent: 'left' } : {};
+  renderItem = dataSource => {
+    const itemStyle = this.state.isMobile ? { justifyContent: "left" } : {};
     return dataSource.map((data, idx) => {
       return (
         <Col xxs="24" s="12" l="6" key={idx}>
@@ -76,8 +69,7 @@ export default class StatisticalCard extends Component {
                       <Icon type="help" style={styles.helpIcon} size="xs" />
                     </span>
                   }
-                  closable={false}
-                >
+                  closable={false}>
                   {data.desc}
                 </Balloon>
               </div>
@@ -90,61 +82,98 @@ export default class StatisticalCard extends Component {
   };
 
   render() {
+    const {
+      dingdan_tPrice,
+      zhongbiao_tPrice,
+      caigou_tPrice,
+      jiesuan_tPrice
+    } = this.state.sumData;
+    const dataSource = [
+      {
+        text: "订单总金额",
+        number: dingdan_tPrice,
+        imgUrl: require("./images/TB1tlVMcgmTBuNjy1XbXXaMrVXa-140-140.png"),
+        desc: "所有询价单总报价金额"
+      },
+      {
+        text: "总中标金额",
+        number: zhongbiao_tPrice,
+        imgUrl: require("./images//TB1Py4_ceuSBuNjy1XcXXcYjFXa-142-140.png"),
+        desc: "相关说明"
+      },
+      {
+        text: "总采购金额",
+        number: caigou_tPrice,
+        imgUrl: require("./images/TB1Ni4_ceuSBuNjy1XcXXcYjFXa-142-140.png"),
+        desc: "相关说明"
+      },
+      {
+        text: "总结算金额",
+        number: jiesuan_tPrice,
+        imgUrl: require("./images/TB1iFKccamWBuNjy1XaXXXCbXXa-140-140.png"),
+        desc: "相关说明"
+      }
+    ];
+
     return (
       <IceContainer style={styles.container}>
-        <Row wrap>{this.renderItem()}</Row>
+        <Row wrap>{this.renderItem(dataSource)}</Row>
       </IceContainer>
     );
   }
 }
+export default connect(({ bund, loading }) => ({
+  bund,
+  loading: loading.effects["bund/fetchOne"]
+}))(StatisticalCard);
 
 const styles = {
   container: {
-    padding: '10px 20px',
+    padding: "10px 20px"
   },
   statisticalCardItem: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '10px 0',
+    display: "flex",
+    justifyContent: "center",
+    padding: "10px 0"
   },
   circleWrap: {
-    width: '70px',
-    height: '70px',
-    position: 'relative',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: '50%',
-    marginRight: '10px',
+    width: "70px",
+    height: "70px",
+    position: "relative",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "50%",
+    marginRight: "10px"
   },
   imgStyle: {
-    maxWidth: '100%',
+    maxWidth: "100%"
   },
   helpIcon: {
-    marginLeft: '5px',
-    color: '#b8b8b8',
+    marginLeft: "5px",
+    color: "#b8b8b8"
   },
   statisticalCardDesc: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center"
   },
   statisticalCardText: {
-    position: 'relative',
-    color: '#333333',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    marginBottom: '4px',
+    position: "relative",
+    color: "#333333",
+    fontSize: "12px",
+    fontWeight: "bold",
+    marginBottom: "4px"
   },
   statisticalCardNumber: {
-    color: '#333333',
-    fontSize: '24px',
+    color: "#333333",
+    fontSize: "24px"
   },
   itemHelp: {
-    width: '12px',
-    height: '12px',
-    position: 'absolute',
-    top: '1px',
-    right: '-15px',
-  },
+    width: "12px",
+    height: "12px",
+    position: "absolute",
+    top: "1px",
+    right: "-15px"
+  }
 };

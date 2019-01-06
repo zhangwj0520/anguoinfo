@@ -55,8 +55,11 @@ export default class CustomTable extends Component {
       ChartList: {},
       targetOld: {},
       current: 1, //
+      baojiao_index:12,
+      dingdan_time:"",
       id: this.props.match.params.id,
       sourseData: [],
+      vender:'',
       data: [],
       width: "100%",
       loading: false,
@@ -461,6 +464,9 @@ export default class CustomTable extends Component {
         data: props.bund.oneListData,
         dataLen: props.bund.oneListDataLen,
         ChartList: props.bund.ChartList,
+        vender:props.bund.vender,
+        baojiao_index:props.bund.baojiao_index,
+        dingdan_time:props.bund.dingdan_time,
         cols
       };
     }
@@ -549,7 +555,6 @@ export default class CustomTable extends Component {
   }
 
   handleFieldChange(value, fieldName) {
-    console.log(value);
     const { target } = this.state;
     if (target) {
       if (fieldName == "zhongbiao" || fieldName == "jiesuan") {
@@ -693,11 +698,11 @@ export default class CustomTable extends Component {
         console.log("Errors in form!!!");
         return;
       }
-      const { id } = this.state;
+      const { id ,baojiao_index} = this.state;
       const { dispatch } = this.props;
       dispatch({
         type: "bund/updatePrice",
-        payload: { data: values, id }
+        payload: { data: values, id ,baojiao_index}
       });
 
       this.setState({
@@ -709,13 +714,15 @@ export default class CustomTable extends Component {
   onOpen = record => {
     const { dispatch } = this.props;
     const { id } = this.state;
+    const {name,type}=record
     dispatch({
       type: "bund/fetchOneMed",
-      payload: { name: record.name, type: record.type, id }
+      payload: { name, type, id }
     });
     this.field.setValues({ ...record });
     this.setState({
-      visible: true
+      visible: true,
+      type
     });
   };
 
@@ -727,7 +734,8 @@ export default class CustomTable extends Component {
 
   render() {
     const init = this.field.init;
-    const { data, changeZhongbiao, ChartList } = this.state;
+    const { data, changeZhongbiao, ChartList,vender,type ,dingdan_time} = this.state;
+    const typea=type==="无"?"":`-${type}`
     const zhongbiaoList = data.filter(item => item.zhongbiao);
     const breadcrumb = [
       { text: "首页", link: "#/" },
@@ -803,13 +811,13 @@ export default class CustomTable extends Component {
     return (
       <Fragment>
         <CustomBreadcrumb dataSource={breadcrumb} />
-        <IceContainer title="账单详细列表">
+        <IceContainer title={vender+"---"+dingdan_time}>
           <Row wrap style={styles.headRow}>
             <Col l="12">
               {!changeZhongbiao && (
                 <Button
                   type="secondary"
-                  style={styles.button}
+                  //style={styles.button}
                   onClick={this.newMember}>
                   <Icon type="add" size="xs" style={{ marginRight: "4px" }} />
                   添加新品种
@@ -829,12 +837,6 @@ export default class CustomTable extends Component {
             </Col>
 
             <Col l="12" style={styles.center}>
-              {/* <Button type="normal" style={styles.button}>
-                删除
-                </Button>
-                <Button type="normal" style={{ ...styles.button, marginLeft: 10 }}>
-                导入
-                </Button> */}
               {!changeZhongbiao && (
                 <Button
                   type="primary"
@@ -877,7 +879,8 @@ export default class CustomTable extends Component {
             closable="esc,mask,close"
             onCancel={this.onClose}
             onClose={this.onClose}
-            title="编辑">
+            title={vender+typea}>
+            {/* <h1>厂家:{vender}{type}</h1> */}
             <Chart
               style={{ marginTop: 20 }}
               height={400}

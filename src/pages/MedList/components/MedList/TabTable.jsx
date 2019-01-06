@@ -46,6 +46,7 @@ export default class TabTable extends Component {
         dataIndex: 'sn',
         width: 120,
         key: 'sn',
+        render:(value,index,record)=><a style={{color: 'blue'}} onClick={() => this.detailList (record)}>{record.sn}</a>
       },
       {
         title: '发货日期',

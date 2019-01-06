@@ -308,15 +308,15 @@ body {
 @media screen and (max-width: 1200px) {
 }
 
-@media screen and (max-width: 721px) and (min-width: 1199px) {
+@media screen and (max-width: 901px) and (min-width: 1199px) {
 }
 
-@media screen and (max-width: 720px) {
+@media screen and (max-width: 900px) {
   .ice-design-header-aside-footer-responsive-layout-#{$theme} {
     .logo {
       width: 80px;
       .logo-text {
-        font-size: 22px;
+        font-size: 16px;
       }
     }
 

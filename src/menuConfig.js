@@ -31,14 +31,14 @@ const asideMenuConfig = [
     icon: "home"
   },
   {
-    name: "订单录入",
-    path: "/upload",
-    icon: "publish"
-  },
-  {
     name: "账单列表",
     path: "/bundlist",
     icon: "ul-list"
+  },
+  {
+    name: "订单录入",
+    path: "/upload",
+    icon: "publish"
   },
   {
     name: "用户管理",

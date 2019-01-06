@@ -29,6 +29,10 @@ export async function uploadFile(params) {
     body: params
   });
 }
+//获取首页信息
+export async function queryAll() {
+  return request("/med/list/all/");
+}
 //获取所有订单信息
 export async function queryAllList() {
   return request("/med/list/");

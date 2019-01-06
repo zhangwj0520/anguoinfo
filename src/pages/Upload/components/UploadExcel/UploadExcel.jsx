@@ -43,7 +43,7 @@ class UploadExcel extends Component {
           specifications = "",
           origin = "",
           type = "";
-        for (; i < 5; i++) {
+        for (; i < 4; i++) {
           let cur = data[i];
           //console.log(cur)
           //   for (let m = 0; m < cur.length - 1; m++) {
@@ -74,14 +74,17 @@ class UploadExcel extends Component {
             }
             // 品名
             if (/\u54c1\u540d/g.test(elem)) {
+              //品名
               name = index;
             }
             // 采购量
             if (/\u91c7\u8d2d\u91cf/g.test(elem)) {
+              //采购量
               quantity = index;
             }
             // 单价
             if (/\u5355\u4ef7/g.test(elem)) {
+              //单价
               dingdan_price = index;
               this.setState({
                 baojiao_index: index
@@ -89,6 +92,7 @@ class UploadExcel extends Component {
             }
             // 采购价
             if (/\u91c7\u8d2d\u4ef7/g.test(elem)) {
+              //采购价
               caigou_price = index;
             }
             // 中标
@@ -128,9 +132,9 @@ class UploadExcel extends Component {
             let obj = {
               key: outputs.length + 1,
               name: cur[name],
-              quantity: cur[quantity],
-              dingdan_price: cur[dingdan_price] || 0,
-              caigou_price: cur[caigou_price] || 0,
+              quantity: parseFloat(cur[quantity]),
+              dingdan_price: parseFloat(cur[dingdan_price]) || 0,
+              caigou_price: parseFloat(cur[caigou_price]) || 0,
               zhongbiao: cur[zhongbiao] || 0,
               specifications: cur[specifications],
               origin: cur[origin] || "",

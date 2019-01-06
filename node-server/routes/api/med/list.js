@@ -108,6 +108,110 @@ router.get("/", (req, res) => {
     res.json(List);
   });
 });
+//获取首页信息
+router.get("/all/", (req, res) => {
+  List.aggregate([
+    {
+      $unwind: "$data"
+    },
+    {
+      $group: {
+        _id: {
+          _id: "$_id",
+          vender: "$vender",
+          baojiao_index: "$baojiao_index",
+          dingdan_time: "$dingdan_time",
+          fahuo_time: "$fahuo_time",
+          key: "$key",
+          sn: "$sn",
+          spend: "$spend"
+        },
+        dingdan_totalPrice: {
+          $sum: { $multiply: ["$data.quantity", "$data.dingdan_price"] }
+        },
+        zhongbiao_totalPrice: {
+          $sum: {
+            $multiply: [
+              "$data.quantity",
+              "$data.dingdan_price",
+              "$data.zhongbiao"
+            ]
+          }
+        },
+        caigou_totalPrice: {
+          $sum: {
+            $multiply: [
+              "$data.quantity",
+              "$data.caigou_price",
+              "$data.zhongbiao"
+            ]
+          }
+        },
+        jiesuan_totalPrice: {
+          $sum: {
+            $multiply: [
+              { $subtract: ["$data.quantity", "$data.back_quantity"] },
+              //"$data.quantity",
+              "$data.dingdan_price",
+              "$data.jiesuan"
+            ]
+          }
+        },
+        zhongbiaoNum: {
+          $sum: "$data.zhongbiao"
+        },
+        jiesuanNum: {
+          $sum: "$data.jiesuan"
+        }
+      }
+    },
+    {
+      $project: {
+        dingdan_totalPrice: 1,
+        zhongbiao_totalPrice: 1,
+        caigou_totalPrice: 1,
+        jiesuan_totalPrice: 1,
+        zhongbiaoNum: 1,
+        jiesuanNum: 1,
+        vender: "$_id.vender",
+        _id: "$_id._id",
+        baojiao_index: "$_id.baojiao_index",
+        dingdan_time: "$_id.dingdan_time",
+        fahuo_time: "$_id.fahuo_time",
+        key: "$_id.key",
+        sn: "$_id.sn",
+        spend: "$_id.spend"
+      }
+    }
+    // {
+    //   $group: {
+    //     _id: "$dingdan_totalPrice",
+    //     dingdan_totalPrice: {
+    //       $sum: "$dingdan_totalPrice"
+    //     }
+    //   }
+    // }
+  ]).then(List => {
+    let dingdan_tPrice = 0,
+      zhongbiao_tPrice = 0,
+      caigou_tPrice = 0,
+      jiesuan_tPrice = 0;
+
+    List.map(item => {
+      dingdan_tPrice += item.dingdan_totalPrice;
+      zhongbiao_tPrice += item.zhongbiao_totalPrice;
+      caigou_tPrice += item.caigou_totalPrice;
+      jiesuan_tPrice += item.jiesuan_totalPrice;
+    });
+
+    res.json({
+      dingdan_tPrice,
+      zhongbiao_tPrice,
+      caigou_tPrice,
+      jiesuan_tPrice
+    });
+  });
+});
 
 //
 router.post("/delete", (req, res) => {
@@ -144,7 +248,10 @@ router.get("/:id", (req, res) => {
       }
       res.json({
         status: "ok",
-        oneListData: List.data
+        oneListData: List.data,
+        vender: List.vender,
+        baojiao_index: List.baojiao_index,
+        dingdan_time: List.dingdan_time
       });
     })
     .catch(err => res.status(404).json(err));
@@ -200,7 +307,13 @@ router.post("/editzhongbiao", (req, res) => {
       new: true
     }
   ).then(List => {
-    res.json({ oneListData: List.data, status: "ok" });
+    res.json({
+      oneListData: List.data,
+      vender: List.vender,
+      baojiao_index: List.baojiao_index,
+      dingdan_time: List.dingdan_time,
+      status: "ok"
+    });
   });
 });
 //更新报价

@@ -1,17 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import StatisticalCard from "./components/StatisticalCard";
+import DataStatistics from "./components/DataStatistics";
+import RealTimeStatistics from "./components/RealTimeStatistics";
+import LatestNews from "./components/LatestNews";
+import { connect } from "dva";
+import "./Dashboard.scss";
 
-import StatisticalCard from './components/StatisticalCard';
-
-import DataStatistics from './components/DataStatistics';
-
-import RealTimeStatistics from './components/RealTimeStatistics';
-
-import LatestNews from './components/LatestNews';
-
-import './Dashboard.scss';
-
-export default class Dashboard extends Component {
-  static displayName = 'Dashboard';
+class Dashboard extends Component {
+  static displayName = "Dashboard";
 
   constructor(props) {
     super(props);
@@ -32,3 +28,4 @@ export default class Dashboard extends Component {
     );
   }
 }
+export default Dashboard;

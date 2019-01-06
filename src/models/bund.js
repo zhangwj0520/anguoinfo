@@ -14,7 +14,8 @@ import {
   fakeMedChartData,
   updateOnePrice,
   deleteOneMed,
-  updateZhongbiao
+  updateZhongbiao,
+  queryAll
 } from "../services/api";
 import XLSX from "xlsx";
 import { Feedback } from "@icedesign/base";
@@ -32,13 +33,26 @@ export default {
     spendList: [],
     spendListLen: 0,
     MedNameList: [],
-    ChartList: []
+    ChartList: [],
+    vender: "",
+    baojiao_index: 12,
+    dingdan_time: "",
+    sumData: {}
   },
 
   effects: {
+    // 获取首页信息
+    *fetchAll({ payload }, { call, put }) {
+      const response = yield call(queryAll);
+      yield put({
+        type: "querySum",
+        payload: response
+      });
+    },
     // 获取所有订单
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryAllList, payload);
+      // console.log(response);
       yield put({
         type: "queryList",
         payload: response
@@ -152,6 +166,13 @@ export default {
         // spendList:payload.spendList,
       };
     },
+    querySum(state, { payload }) {
+      return {
+        ...state,
+        sumData: payload
+        // spendList:payload.spendList,
+      };
+    },
     queryMedList(state, { payload }) {
       return {
         ...state,
@@ -160,10 +181,13 @@ export default {
     },
 
     queryOne(state, { payload }) {
-      const { oneListData } = payload;
+      const { oneListData, vender, baojiao_index, dingdan_time } = payload;
       return {
         ...state,
         oneListData,
+        vender,
+        baojiao_index,
+        dingdan_time,
         oneListDataLen: oneListData.length
       };
     },

@@ -73,10 +73,5 @@
     "node": ">=8.0.0"
   },
   "title": "CMS",
-  "proxyConfig": {
-    "//www.easy-mock.com/mock/5b960dce7db69152d06475bc/ice/upload": {
-      "enable": true,
-      "target": "www.easy-mock.com/mock/5b960dce7db69152d06475bc/ice/upload"
-    }
-  }
+  "proxyConfig": {}
 }
