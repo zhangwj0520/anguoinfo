@@ -91,25 +91,25 @@ class StatisticalCard extends Component {
     const dataSource = [
       {
         text: "订单总金额",
-        number: dingdan_tPrice,
+        number: "￥:" + dingdan_tPrice,
         imgUrl: require("./images/TB1tlVMcgmTBuNjy1XbXXaMrVXa-140-140.png"),
         desc: "所有询价单总报价金额"
       },
       {
         text: "总中标金额",
-        number: zhongbiao_tPrice,
+        number: "￥:" + zhongbiao_tPrice,
         imgUrl: require("./images//TB1Py4_ceuSBuNjy1XcXXcYjFXa-142-140.png"),
         desc: "所有厂家单总中标金额"
       },
       {
         text: "总采购金额",
-        number: caigou_tPrice,
+        number: "￥:" + caigou_tPrice,
         imgUrl: require("./images/TB1Ni4_ceuSBuNjy1XcXXcYjFXa-142-140.png"),
         desc: "总采购金额"
       },
       {
         text: "总利润(未扣费用)",
-        number: jiesuan_tPrice - caigou_tPrice,
+        number: "￥:" + (jiesuan_tPrice - caigou_tPrice),
         imgUrl: require("./images/TB1iFKccamWBuNjy1XaXXXCbXXa-140-140.png"),
         desc: "未扣除费用"
       }
