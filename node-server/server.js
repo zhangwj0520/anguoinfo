@@ -10,7 +10,7 @@ const users = require("./routes/api/med/user");
 const askPriceList = require("./routes/api/med/list");
 
 //DB config
-const db = require("./config/config").mongoURL_zwj;
+const db = require("./config/config").mongoURL;
 
 //Connct to mongodb
 mongoose

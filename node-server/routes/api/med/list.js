@@ -1,8 +1,7 @@
-// @login &register
+// @list &register
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-
 const List = require("../../../module/Med_List");
 
 //$route POST api/Lists/add
