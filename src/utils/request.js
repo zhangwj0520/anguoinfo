@@ -24,8 +24,8 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-  //let urls = "http://123.56.15.36:8989" + url;
-  let urls = "http://127.0.0.1:8989" + url;
+  let urls = "http://123.56.15.36:8989" + url;
+  //let urls = "http://127.0.0.1:8989" + url;
   const defaultOptions = {
     mode: "cors"
     //cache: 'force-cache', //表示fetch请求不顾一切的依赖缓存, 即使缓存过期了, 它依然从缓存中读取. 除非没有任何缓存, 那么它将发送一个正常的request.

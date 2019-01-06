@@ -20,7 +20,7 @@ export default {
       // Login successfully
       if (response.status === "ok") {
         Feedback.toast.success("登录成功!");
-        //reloadAuthorized(); 权限
+        // reloadAuthorized(); 权限
         yield put(routerRedux.replace("/"));
       }
       if (response.status === "noauth") {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import CustomTable from './CustomTable';
 
 export default class UserTable extends Component {
@@ -8,12 +8,12 @@ export default class UserTable extends Component {
 
   static defaultProps = {};
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super (props);
     this.state = {};
   }
 
-  render() {
+  render () {
     return (
       <div>
         <CustomTable />

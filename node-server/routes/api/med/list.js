@@ -23,8 +23,8 @@ router.post("/add", (req, res) => {
     ListFields.data = req.body.data;
     for (let i = 0; i < req.body.data.length - 1; i++) {
       let cur = req.body.data[i];
-      dtotal += parseInt(cur.quantity) * parseInt(cur.dingdan_price);
-      ctotal += parseInt(cur.quantity) * parseInt(cur.caigou_price);
+      dtotal += parseFloat(cur.quantity) * parseFloat(cur.dingdan_price);
+      ctotal += parseFloat(cur.quantity) * parseFloat(cur.caigou_price);
     }
     ListFields.dingdan_totalPrice = dtotal ? dtotal : 0;
     ListFields.caigou_totalPrice = ctotal ? ctotal : 0;
@@ -123,12 +123,16 @@ router.post("/edit/:id", (req, res) => {
   if (data) {
     for (let i = 0; i < data.length - 1; i++) {
       let cur = req.body.data[i];
-      dtotal += (cur.quantity - cur.back_quantity) * cur.dingdan_price;
+      dtotal +=
+        (parseFloat(cur.quantity) - parseFloat(cur.back_quantity)) *
+        cur.dingdan_price;
       if (cur.zhongbiao) {
         zbtotal++;
-        ctotal += cur.quantity * cur.caigou_price;
-        jiesuan_total += (cur.quantity - cur.back_quantity) * cur.caigou_price;
-        zhongbiao_totalPrice += Number(cur.quantity) * cur.dingdan_price; //中标金额
+        ctotal += parseFloat(cur.quantity) * cur.caigou_price;
+        jiesuan_total +=
+          (parseFloat(cur.quantity) - parseFloat(cur.back_quantity)) *
+          cur.caigou_price;
+        zhongbiao_totalPrice += parseFloat(cur.quantity) * cur.dingdan_price; //中标金额
       }
       if (cur.jiesuan) {
         jstotal++;
@@ -242,6 +246,38 @@ router.get("/spend/:id", (req, res) => {
         status: "ok",
         spendList: List.spendList
       });
+    })
+    .catch(err => res.status(404).json(err));
+});
+
+//更新花费情况
+router.post("/spend/:id", (req, res) => {
+  let { spendList } = req.body;
+  const { id } = req.params;
+  let spend = 0;
+  if (spendList.length != 0) {
+    for (let i = 0; i < spendList.length; i++) {
+      const cur = spendList[i];
+      spend += Number(cur.money);
+    }
+  }
+  List.findOneAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        spendList,
+        spend
+      }
+    },
+    {
+      new: true
+    }
+  )
+    .then(List => {
+      if (!List) {
+        return res.status(404).json("没有任何数据");
+      }
+      res.json(List);
     })
     .catch(err => res.status(404).json(err));
 });

@@ -418,11 +418,6 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
-lodash.get@4.4.2:
-  version "4.4.2"
-  resolved "http://registry.npm.taobao.org/lodash.get/download/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
-  integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
-
 lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "http://registry.npm.taobao.org/lodash.includes/download/lodash.includes-4.3.0.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
@@ -549,15 +544,14 @@ mongoose-legacy-pluralize@1.0.2:
   resolved "http://registry.npm.taobao.org/mongoose-legacy-pluralize/download/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
   integrity sha1-O6n5H6UHtRhtOZ+0CFS/8Y+1Y+Q=
 
-mongoose@^5.3.2:
-  version "5.3.13"
-  resolved "http://registry.npm.taobao.org/mongoose/download/mongoose-5.3.13.tgz#043d6fd387ea5c13db857b20cf59088f9f393af6"
-  integrity sha1-BD1v04fqXBPbhXsgz1kIj585OvY=
+mongoose@^5.4.2:
+  version "5.4.2"
+  resolved "http://registry.npm.taobao.org/mongoose/download/mongoose-5.4.2.tgz#3f3d87e0082f3e28bf24f0e3f87e107195996461"
+  integrity sha1-Pz2H4AgvPii/JPDj+H4QcZWZZGE=
   dependencies:
     async "2.6.1"
     bson "~1.1.0"
     kareem "2.3.0"
-    lodash.get "4.4.2"
     mongodb "3.1.10"
     mongodb-core "3.1.9"
     mongoose-legacy-pluralize "1.0.2"

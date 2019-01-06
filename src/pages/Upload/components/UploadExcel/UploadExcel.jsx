@@ -120,35 +120,36 @@ class UploadExcel extends Component {
               }
             }
             //console.log(`循环从${flag}开始`);
-            for (let j = flag; j <= data.length - 1; j++) {
-              let cur = data[j]; 
-              if(cur.length===0) break     
-              let obj = {
-                key: cur[0],
-                name: cur[name],
-                quantity: cur[quantity],
-                dingdan_price: cur[dingdan_price]||0,
-                caigou_price: cur[caigou_price] || 0,
-                zhongbiao: cur[zhongbiao] || 0,
-                specifications: cur[specifications],
-                origin: cur[origin]||'',
-                description: cur[description],
-                type:cur[type]||"无",
-                jiesuan:0, //结算
-                back_quantity: 0, //退尾料
-                settlement: 0, //
-                
-              };
-              outputs.push(obj);
-              //outputs[obj.type].push(obj);
+            for (let sheet in wb.Sheets) {
+               let typev=sheet.indexOf("Sheet")!=0?sheet:null
+                const wsss = wb.Sheets[sheet];
+                let dataa = XLSX.utils.sheet_to_json(wsss, {header:1});
+                for (let j = flag; j <= dataa.length - 1; j++) {
+                    let cur = dataa[j]; 
+                    if(cur.length===0) break     
+                    let obj = {
+                      key: cur[0],
+                      name: cur[name],
+                      quantity: cur[quantity],
+                      dingdan_price: cur[dingdan_price]||0,
+                      caigou_price: cur[caigou_price] || 0,
+                      zhongbiao: cur[zhongbiao] || 0,
+                      specifications: cur[specifications],
+                      origin: cur[origin]||'',
+                      description: cur[description],
+                      type:cur[type]||typev||"无",
+                      jiesuan:0, //结算
+                      back_quantity: 0, //退尾料
+                      settlement: 0, //
+                      
+                    };
+                    outputs.push(obj);
+                    //outputs[obj.type].push(obj);
+                  }
             }
+        
            }
-           
-            // for(const keyss in outputs){
-            //     if(outputs[keyss].length===0){
-            //         delete outputs[keyss]
-            //     }
-            // }
+            console.log(outputs)
 			this.setState({ fileName:file.name.split('.')[0],data: outputs ,dataSourse: data,ws:ws, cols: make_cols(ws['!ref'])},);
 		};
 		if(rABS) reader.readAsBinaryString(file); else reader.readAsArrayBuffer(file);
@@ -156,12 +157,8 @@ class UploadExcel extends Component {
     onSave=()=>{
         const { dispatch } = this.props;
         const { dataSourse, sn, vender, dingdan_time,baojiao_index,cols ,data,fileName} = this.state;
-        //console.log(key)
         let values = { sn, vender,baojiao_index,cols ,data ,dataSourse,fileName,dingdan_time};
-        // values.time = Number(dingdan_time);
-        // console.log(dingdan_time)
         values.key = sn;
-        console.log(values)
         dispatch({
             type: 'file/upload',
             payload: values,
