@@ -339,7 +339,10 @@ router.post("/updateprice", (req, res) => {
         }
         res.json({
           status: "ok",
-          oneListData: List.data
+          oneListData: List.data,
+          vender: List.vender,
+          baojiao_index: List.baojiao_index,
+          dingdan_time: List.dingdan_time
         });
       })
       .catch(err =>

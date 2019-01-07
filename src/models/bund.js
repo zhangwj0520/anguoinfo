@@ -151,6 +151,7 @@ export default {
     },
     *updatePrice({ payload }, { call, put }) {
       const response = yield call(updateOnePrice, payload);
+      toast.success("更新成功");
       yield put({
         type: "queryOne",
         payload: response
