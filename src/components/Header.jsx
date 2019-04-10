@@ -1,38 +1,29 @@
-import React, { PureComponent } from 'react';
-import { Balloon, Icon } from '@icedesign/base';
-import IceImg from '@icedesign/img';
-import Layout from '@icedesign/layout';
-import Menu from '@icedesign/menu';
-import FoundationSymbol from 'foundation-symbol';
-import cx from 'classnames';
-import { withRouter, Link } from 'react-router-dom';
-import { headerMenuConfig } from './../menuConfig';
-import Logo from './Logo';
+import React, { PureComponent } from "react";
+import { Balloon, Icon } from "@icedesign/base";
+import IceImg from "@icedesign/img";
+import Layout from "@icedesign/layout";
+import Menu from "@icedesign/menu";
+import FoundationSymbol from "foundation-symbol";
+import cx from "classnames";
+import { withRouter, Link } from "react-router-dom";
+import { headerMenuConfig } from "./../menuConfig";
+import Logo from "./Logo";
 
 @withRouter
 export default class Header extends PureComponent {
-
-
-  logout=()=>{
-      console.log('tuichu')
-      localStorage.clear()
-      this.props.history.push('/login');
-  }
+  logout = () => {
+    console.log("tuichu");
+    localStorage.clear();
+    this.props.history.push("/login");
+  };
 
   render() {
     const { width, theme, isMobile, className, style } = this.props;
 
     return (
-      <Layout.Header
-        theme={theme}
-        className={cx('ice-design-layout-header', className)}
-        style={{ ...style, width }}
-      >
+      <Layout.Header theme={theme} className={cx("ice-design-layout-header", className)} style={{ ...style, width }}>
         <Logo />
-        <div
-          className="ice-design-layout-header-menu"
-          style={{ display: 'flex' }}
-        >
+        <div className="ice-design-layout-header-menu" style={{ display: "flex" }}>
           {/* Header 菜单项 begin */}
           {headerMenuConfig && headerMenuConfig.length > 0 ? (
             <Menu mode="horizontal" selectedKeys={[]}>
@@ -40,7 +31,7 @@ export default class Header extends PureComponent {
                 const linkProps = {};
                 if (nav.newWindow) {
                   linkProps.href = nav.to;
-                  linkProps.target = '_blank';
+                  linkProps.target = "_blank";
                 } else if (nav.external) {
                   linkProps.href = nav.to;
                 } else {
@@ -50,16 +41,12 @@ export default class Header extends PureComponent {
                   <Menu.Item key={idx}>
                     {linkProps.to ? (
                       <Link {...linkProps}>
-                        {nav.icon ? (
-                          <FoundationSymbol type={nav.icon} size="small" />
-                        ) : null}
+                        {nav.icon ? <FoundationSymbol type={nav.icon} size="small" /> : null}
                         {!isMobile ? nav.name : null}
                       </Link>
                     ) : (
                       <a {...linkProps}>
-                        {nav.icon ? (
-                          <FoundationSymbol type={nav.icon} size="small" />
-                        ) : null}
+                        {nav.icon ? <FoundationSymbol type={nav.icon} size="small" /> : null}
                         {!isMobile ? nav.name : null}
                       </a>
                     )}
@@ -77,20 +64,21 @@ export default class Header extends PureComponent {
               <div
                 className="ice-design-header-userpannel"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: 12
                 }}
               >
                 <IceImg
                   height={40}
                   width={40}
-                  src={require('./images/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png')}
+                  src={require("./images/TB1L6tBXQyWBuNjy0FpXXassXXa-80-80.png")}
                   className="user-avatar"
                 />
                 <div className="user-profile">
-                  <span className="user-name" style={{ fontSize: '13px' }}>
-                    {JSON.parse(localStorage.getItem('userName'))}
+                  <span className="user-name" style={{ fontSize: "13px" }}>
+                    {"11"}
+                    {/* {JSON.parse(localStorage.getItem('userName'))} */}
                   </span>
                   {/* <br />
                   <span
@@ -100,11 +88,7 @@ export default class Header extends PureComponent {
                     技术部
                   </span> */}
                 </div>
-                <Icon
-                  type="arrow-down-filling"
-                  size="xxs"
-                  className="icon-down"
-                />
+                <Icon type="arrow-down-filling" size="xxs" className="icon-down" />
               </div>
             }
             closable={false}
@@ -113,17 +97,20 @@ export default class Header extends PureComponent {
             <ul>
               <li className="user-profile-menu-item">
                 <Link to="/">
-                  <FoundationSymbol type="person" size="small" />我的主页
+                  <FoundationSymbol type="person" size="small" />
+                  我的主页
                 </Link>
               </li>
               <li className="user-profile-menu-item">
                 <Link to="/">
-                  <FoundationSymbol type="repair" size="small" />设置
+                  <FoundationSymbol type="repair" size="small" />
+                  设置
                 </Link>
               </li>
               <li className="user-profile-menu-item" onClick={this.logout}>
                 {/* <Link to="/"> */}
-                  <FoundationSymbol type="compass" size="small" />退出
+                <FoundationSymbol type="compass" size="small" />
+                退出
                 {/* </Link> */}
               </li>
             </ul>

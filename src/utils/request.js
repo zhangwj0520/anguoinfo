@@ -1,17 +1,17 @@
-import fetch from "dva/fetch";
-import Notification from "@icedesign/notification";
+import fetch from 'dva/fetch'
+import Notification from '@icedesign/notification'
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
-    return response;
+    return response
   }
   Notification.error({
     message: `请求错误 ${response.status}: ${response.url}`,
     description: response.statusText
-  });
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
+  })
+  const error = new Error(response.statusText)
+  error.response = response
+  throw error
 }
 
 /**
@@ -22,21 +22,21 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-  let urls = "http://123.56.15.36:8989" + url;
-  //let urls = "http://127.0.0.1:8989" + url;
+  let urls = 'http://123.56.15.36:8989/v1' + url
+  // let urls = "http://127.0.0.1:8989/v1" + url;
   const defaultOptions = {
-    mode: "cors"
+    mode: 'cors'
     //cache: 'force-cache', //表示fetch请求不顾一切的依赖缓存, 即使缓存过期了, 它依然从缓存中读取. 除非没有任何缓存, 那么它将发送一个正常的request.
     // credentials: 'include', Fetch 请求默认是不带 cookie 的，需要设置 fetch(url, {credentials: 'include'})
-  };
-  const newOptions = { ...defaultOptions, ...options };
-  if (newOptions.method === "POST" || newOptions.method === "PUT") {
+  }
+  const newOptions = { ...defaultOptions, ...options }
+  if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
     newOptions.headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json; charset=utf-8",
+      Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
       ...newOptions.headers
-    };
-    newOptions.body = JSON.stringify(newOptions.body);
+    }
+    newOptions.body = JSON.stringify(newOptions.body)
   }
 
   return (
@@ -49,15 +49,15 @@ export default function request(url, options) {
           Notification.error({
             message: error.name,
             description: error.message
-          });
+          })
         }
-        if ("stack" in error && "message" in error) {
+        if ('stack' in error && 'message' in error) {
           Notification.error({
             message: `请求错误: ${url}`,
             description: error.message
-          });
+          })
         }
-        return error;
+        return error
       })
-  );
+  )
 }

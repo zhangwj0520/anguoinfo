@@ -21,8 +21,7 @@ class UploadExcel extends Component {
     // this.exportFile = this.exportFile.bind(this);
   }
   handleFile = file => {
-    const outputs = []; //清空接收数据
-    //const outputs = {"无":[],"同仁堂":[],"医院":[]}; //清空接收数据
+    let outputs = []; //清空接收数据
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
     reader.onload = e => {
@@ -31,124 +30,149 @@ class UploadExcel extends Component {
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
       let data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      console.log(data);
+      let flag = 0,
+        i = 0,
+        _medname,
+        _vender,
+        _orderid,
+        _quantity = 0,
+        _orederprice = 0,
+        _buyprice = "",
+        _iswin = "",
+        _description = "",
+        _specification = "",
+        _origin = "",
+        _type = "";
       if (data.length) {
-        let flag = 0,
-          i = 0,
-          name = 0,
-          quantity = 0,
-          dingdan_price = 0,
-          caigou_price = "",
-          zhongbiao = "",
-          description = "",
-          specifications = "",
-          origin = "",
-          type = "";
         for (; i < 4; i++) {
           let cur = data[i];
-          //console.log(cur)
-          //   for (let m = 0; m < cur.length - 1; m++) {
-          //     if (cur[m] == null) {
-          //       cur[m] = 'null';
-          //     }
-          //   }
           for (let [index, elem] of cur.entries()) {
             // 匹配订单编号
-            let sn = /[a-zA-Z]{2,3}(\d{8})$/g.exec(elem);
-            if (sn) {
-              this.setState({
-                sn: sn[0],
-                dingdan_time: sn[1]
-              });
+            if (/\u8ba2\u5355\u7f16\u53f7/g.exec(elem)) {
+              _orderid = index;
+              // this.setState({
+              //   orderid: orderid[0],
+              //   ordertime: orderid[1]
+              // });
             }
-            // 厂家
-            let vender = /(\u5d07\u5149)|(\u91d1\u5d07\u5149)|(\u7d2b\u4e91\u817e)|(\u4e5d\u53d1)/g.exec(
-              elem
-            );
-            if (vender) {
-              this.setState({
-                vender: vender[0]
-              });
+            // 工厂名称
+            // let vender = /\u5de5\u5382\u540d\u79f0/g.exec(elem);
+            if (/\u5de5\u5382\u540d\u79f0/g.exec(elem)) {
+              _vender = index;
+              //    // 客户
+              // if (/\u5ba2\u6237/g.test(vender)) {
+              //   medtype = index;
+              // }
+              // this.setState({
+              //   vender: vender[0]
+              // });
             }
-            if (/^1$/g.test(elem)) {
-              flag = i;
-            }
+            // if (/^1$/g.test(elem)) {
+            //   flag = i;
+            // }
             // 品名
             if (/\u54c1\u540d/g.test(elem)) {
               //品名
-              name = index;
+              _medname = index;
+              flag = i + 1;
             }
             // 采购量
             if (/\u91c7\u8d2d\u91cf/g.test(elem)) {
               //采购量
-              quantity = index;
+              _quantity = index;
             }
             // 单价
             if (/\u5355\u4ef7/g.test(elem)) {
               //单价
-              dingdan_price = index;
-              this.setState({
-                baojiao_index: index
-              });
+              _orederprice = index;
+              // this.setState({
+              //   baojiao_index: index
+              // });
             }
             // 采购价
             if (/\u91c7\u8d2d\u4ef7/g.test(elem)) {
               //采购价
-              caigou_price = index;
+              _buyprice = index;
             }
             // 中标
             if (/\u4e2d\u6807/g.test(elem)) {
-              zhongbiao = index;
+              _iswin = index;
             }
             // 品质及要求
             if (/\u54c1\u8d28\u53ca\u8981\u6c42/g.test(elem)) {
-              description = index;
+              _description = index;
             }
             // 规格
             if (/\u89c4\u683c/g.test(elem)) {
-              specifications = index;
+              _specification = index;
             }
             // 产地
             if (/\u4ea7\u5730/g.test(elem)) {
-              origin = index;
+              _origin = index;
             }
-            // 客户
-            if (/\u5ba2\u6237/g.test(elem)) {
-              type = index;
-            }
+
             // // 是否结算
             // if (/\u662f\u5426\u7ed3\u7b97/g.test(elem)) {
             //   jiesuan = index;
             // }
           }
         }
-        //console.log(`循环从${flag}开始`);
-        for (let sheet in wb.Sheets) {
-          let typev = sheet.indexOf("Sheet") != 0 ? sheet : null;
-          const wsss = wb.Sheets[sheet];
-          let dataa = XLSX.utils.sheet_to_json(wsss, { header: 1 });
-          for (let j = flag; j <= dataa.length - 1; j++) {
-            let cur = dataa[j];
-            if (cur.length === 0) break;
-            let obj = {
-              key: outputs.length + 1,
-              name: cur[name],
-              quantity: parseFloat(cur[quantity]),
-              dingdan_price: parseFloat(cur[dingdan_price]) || 0,
-              caigou_price: parseFloat(cur[caigou_price]) || 0,
-              zhongbiao: cur[zhongbiao] || 0,
-              specifications: cur[specifications],
-              origin: cur[origin] || "",
-              description: cur[description],
-              type: cur[type] || typev || "无",
-              jiesuan: 0, //结算
-              back_quantity: 0, //退尾料
-              remark: ""
-            };
-            outputs.push(obj);
-            //outputs[obj.type].push(obj);
-          }
+      }
+      let medVenderObj = {};
+      for (let j = flag; j <= data.length - 1; j++) {
+        let cur = data[j];
+        if (cur.length === 0) break;
+        if (!cur[_quantity]) continue;
+        let medname = cur[_medname],
+          orderid = cur[_orderid],
+          ordertime = orderid.match(/\d+/g)[0],
+          vender = cur[_vender],
+          quantity = cur[_quantity] || 0,
+          orderprice = cur[_orederprice] || 0,
+          buyprice = cur[_buyprice] || 0,
+          iswin = cur[_iswin] || 0,
+          specification = cur[_specification] || "",
+          origin = cur[_origin] || "",
+          description = cur[_description] || "",
+          type = "无";
+        if (vender.indexOf("同仁堂") != -1) {
+          type = "同仁堂";
+          vender = "紫云腾";
+        } else if (vender.indexOf("医院") != -1) {
+          type = "医院";
+          vender = "紫云腾";
+        } else {
+        }
+
+        let orderObj = { orderid, vender, ordertime, medlist: [] };
+        let medlist = {
+          medname,
+          quantity,
+          orderid,
+          orderprice,
+          buyprice,
+          iswin,
+          specification,
+          origin,
+          description,
+          type
+        };
+        if (medVenderObj[orderid]) {
+          medVenderObj[orderid].medlist.push(medlist);
+        } else {
+          medVenderObj[orderid] = orderObj;
+          medVenderObj[orderid].medlist.push(medlist);
         }
       }
+
+      for (let key in medVenderObj) {
+        medVenderObj[key].medlist = JSON.stringify(medVenderObj[key].medlist);
+      }
+      console.log(medVenderObj);
+
+      outputs = Object.values(medVenderObj);
+      // console.log(outputs);
       this.setState({
         fileName: file.name.split(".")[0],
         data: outputs,
@@ -162,30 +186,10 @@ class UploadExcel extends Component {
   };
   onSave = () => {
     const { dispatch } = this.props;
-    const {
-      dataSourse,
-      sn,
-      vender,
-      dingdan_time,
-      baojiao_index,
-      cols,
-      data,
-      fileName
-    } = this.state;
-    let values = {
-      sn,
-      vender,
-      baojiao_index,
-      cols,
-      data,
-      dataSourse,
-      fileName,
-      dingdan_time
-    };
-    values.key = sn;
+    const { data } = this.state;
     dispatch({
       type: "file/upload",
-      payload: values
+      payload: { data }
     });
   };
   exportFile = () => {

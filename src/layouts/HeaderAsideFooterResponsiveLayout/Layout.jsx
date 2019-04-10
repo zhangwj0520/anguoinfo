@@ -1,21 +1,21 @@
 /* eslint no-undef:0, no-unused-expressions:0, array-callback-return:0 */
-import React, { Component } from 'react';
-import cx from 'classnames';
-import Layout from '@icedesign/layout';
-import { Icon } from '@icedesign/base';
-import Menu, { SubMenu, Item as MenuItem } from '@icedesign/menu';
-import { withRouter, Link } from 'react-router-dom';
-import FoundationSymbol from 'foundation-symbol';
-import { enquire } from 'enquire-js';
-import Header from './../../components/Header';
-import Footer from './../../components/Footer';
-import Logo from './../../components/Logo';
-import { asideMenuConfig } from './../../menuConfig';
-import './scss/light.scss';
-import './scss/dark.scss';
+import React, { Component } from "react";
+import cx from "classnames";
+import Layout from "@icedesign/layout";
+import { Icon } from "@icedesign/base";
+import Menu, { SubMenu, Item as MenuItem } from "@icedesign/menu";
+import { withRouter, Link } from "react-router-dom";
+import FoundationSymbol from "foundation-symbol";
+import { enquire } from "enquire-js";
+import Header from "./../../components/Header";
+import Footer from "./../../components/Footer";
+import Logo from "./../../components/Logo";
+import { asideMenuConfig } from "./../../menuConfig";
+import "./scss/light.scss";
+import "./scss/dark.scss";
 
 // 设置默认的皮肤配置，支持 dark 和 light 两套皮肤配置
-const theme = typeof THEME === 'undefined' ? 'dark' : THEME;
+const theme = typeof THEME === "undefined" ? "dark" : THEME;
 @withRouter
 export default class HeaderAsideFooterResponsiveLayout extends Component {
   static propTypes = {};
@@ -30,37 +30,37 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
       collapse: false,
       openDrawer: false,
       isScreen: undefined,
-      openKeys,
+      openKeys
     };
     this.openKeysCache = openKeys;
   }
 
   componentDidMount() {
     this.enquireScreenRegister();
-    const userName = JSON.parse(localStorage.getItem('userName'));
-        if (!userName) {
-          this.props.history.push('/login');
-        }
+    // const userName = JSON.parse(localStorage.getItem('userName'));
+    //     if (!userName) {
+    //       this.props.history.push('/login');
+    //     }
   }
 
   /**
    * 注册监听屏幕的变化，可根据不同分辨率做对应的处理
    */
   enquireScreenRegister = () => {
-    const isMobile = 'screen and (max-width: 900px)';
-    const isTablet = 'screen and (min-width: 901px) and (max-width: 1199px)';
-    const isDesktop = 'screen and (min-width: 1200px)';
+    const isMobile = "screen and (max-width: 900px)";
+    const isTablet = "screen and (min-width: 901px) and (max-width: 1199px)";
+    const isDesktop = "screen and (min-width: 1200px)";
 
-    enquire.register(isMobile, this.enquireScreenHandle('isMobile'));
-    enquire.register(isTablet, this.enquireScreenHandle('isTablet'));
-    enquire.register(isDesktop, this.enquireScreenHandle('isDesktop'));
+    enquire.register(isMobile, this.enquireScreenHandle("isMobile"));
+    enquire.register(isTablet, this.enquireScreenHandle("isTablet"));
+    enquire.register(isDesktop, this.enquireScreenHandle("isDesktop"));
   };
 
-  enquireScreenHandle = (type) => {
+  enquireScreenHandle = type => {
     let collapse;
-    if (type === 'isMobile') {
+    if (type === "isMobile") {
       collapse = false;
-    } else if (type === 'isTablet') {
+    } else if (type === "isTablet") {
       collapse = true;
     } else {
       collapse = this.state.collapse;
@@ -70,12 +70,12 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
       match: () => {
         this.setState({
           isScreen: type,
-          collapse,
+          collapse
         });
       },
       unmatch: () => {
         // handler unmatched
-      },
+      }
     };
 
     return handler;
@@ -87,7 +87,7 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
 
     this.setState({
       collapse: !collapse,
-      openKeys,
+      openKeys
     });
   };
 
@@ -97,16 +97,16 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
   toggleMenu = () => {
     const { openDrawer } = this.state;
     this.setState({
-      openDrawer: !openDrawer,
+      openDrawer: !openDrawer
     });
   };
 
   /**
    * 当前展开的菜单项
    */
-  onOpenChange = (openKeys) => {
+  onOpenChange = openKeys => {
     this.setState({
-      openKeys,
+      openKeys
     });
     this.openKeysCache = openKeys;
   };
@@ -142,44 +142,33 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
 
     return (
       <Layout
-        style={{ minHeight: '100vh' }}
-        className={cx(
-          `ice-design-header-aside-footer-responsive-layout-${theme}`,
-          {
-            'ice-design-layout': true,
-          }
-        )}
+        style={{ minHeight: "100vh" }}
+        className={cx(`ice-design-header-aside-footer-responsive-layout-${theme}`, {
+          "ice-design-layout": true
+        })}
       >
-        <Header
-          theme={theme}
-          isMobile={this.state.isScreen !== 'isDesktop' ? true : undefined}
-        />
+        <Header theme={theme} isMobile={this.state.isScreen !== "isDesktop" ? true : undefined} />
         <Layout.Section>
-          {this.state.isScreen === 'isMobile' && (
+          {this.state.isScreen === "isMobile" && (
             <a className="menu-btn" onClick={this.toggleMenu}>
               <Icon type="category" size="small" />
             </a>
           )}
-          {this.state.openDrawer && (
-            <div className="open-drawer-bg" onClick={this.toggleMenu} />
-          )}
+          {this.state.openDrawer && <div className="open-drawer-bg" onClick={this.toggleMenu} />}
           <Layout.Aside
             width="auto"
             theme={theme}
-            className={cx('ice-design-layout-aside', {
-              'open-drawer': this.state.openDrawer,
+            className={cx("ice-design-layout-aside", {
+              "open-drawer": this.state.openDrawer
             })}
           >
             {/* 侧边菜单项 begin */}
-            {this.state.isScreen !== 'isMobile' && (
+            {this.state.isScreen !== "isMobile" && (
               <a className="collapse-btn" onClick={this.toggleCollapse}>
-                <Icon
-                  type={this.state.collapse ? 'arrow-right' : 'arrow-left'}
-                  size="small"
-                />
+                <Icon type={this.state.collapse ? "arrow-right" : "arrow-left"} size="small" />
               </a>
             )}
-            {this.state.isScreen === 'isMobile' && <Logo />}
+            {this.state.isScreen === "isMobile" && <Logo />}
             <Menu
               style={{ width: this.state.collapse ? 60 : 140 }}
               inlineCollapsed={this.state.collapse}
@@ -199,20 +188,16 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
                         key={index}
                         title={
                           <span>
-                            {nav.icon ? (
-                              <FoundationSymbol size="small" type={nav.icon} />
-                            ) : null}
-                            <span className="ice-menu-collapse-hide">
-                              {nav.name}
-                            </span>
+                            {nav.icon ? <FoundationSymbol size="small" type={nav.icon} /> : null}
+                            <span className="ice-menu-collapse-hide">{nav.name}</span>
                           </span>
                         }
                       >
-                        {nav.children.map((item) => {
+                        {nav.children.map(item => {
                           const linkProps = {};
                           if (item.newWindow) {
                             linkProps.href = item.path;
-                            linkProps.target = '_blank';
+                            linkProps.target = "_blank";
                           } else if (item.external) {
                             linkProps.href = item.path;
                           } else {
@@ -230,7 +215,7 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
                   const linkProps = {};
                   if (nav.newWindow) {
                     linkProps.href = nav.path;
-                    linkProps.target = '_blank';
+                    linkProps.target = "_blank";
                   } else if (nav.external) {
                     linkProps.href = nav.path;
                   } else {
@@ -240,12 +225,8 @@ export default class HeaderAsideFooterResponsiveLayout extends Component {
                     <MenuItem key={nav.path}>
                       <Link {...linkProps}>
                         <span>
-                          {nav.icon ? (
-                            <FoundationSymbol size="small" type={nav.icon} />
-                          ) : null}
-                          <span className="ice-menu-collapse-hide">
-                            {nav.name}
-                          </span>
+                          {nav.icon ? <FoundationSymbol size="small" type={nav.icon} /> : null}
+                          <span className="ice-menu-collapse-hide">{nav.name}</span>
                         </span>
                       </Link>
                     </MenuItem>

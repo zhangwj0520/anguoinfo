@@ -24,7 +24,7 @@ export async function reigsterAccount(params) {
 //询价单上传
 //上传
 export async function uploadFile(params) {
-  return request("/med/list/add", {
+  return request("/order/add", {
     method: "POST",
     body: params
   });
